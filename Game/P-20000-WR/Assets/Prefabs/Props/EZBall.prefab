@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 810350432183390783}
   - component: {fileID: 7866454890537287176}
   - component: {fileID: 8238832213828337092}
+  - component: {fileID: 5338860005586237477}
   m_Layer: 0
   m_Name: EZBall
   m_TagString: Untagged
@@ -130,7 +131,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
@@ -159,3 +160,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a2f3c202078af24587f4e81a7176f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5338860005586237477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7138900979341638384}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ef29adc8e446a847933693667160e3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gravityScale: 0.5

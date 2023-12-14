@@ -7,7 +7,8 @@ public enum BallEventType
     Strike,
     Hit,
     Homer,
-    Foul
+    Foul,
+    HBP
 }
 
 public class DetectBallStat : MonoBehaviour
@@ -20,7 +21,8 @@ public class DetectBallStat : MonoBehaviour
         {"HRCenter", BallEventType.Homer},
         {"HRRight", BallEventType.Homer},
         {"HRLeft", BallEventType.Homer},
-        {"StrikeZone", BallEventType.Strike}
+        {"StrikeZone", BallEventType.Strike},
+        {"Player", BallEventType.HBP},
     };
 
     
@@ -41,22 +43,32 @@ public class DetectBallStat : MonoBehaviour
         BallEventType ballEvent;
         if (tags.TryGetValue(other.tag, out ballEvent))
         {
-            if (isCollision)
+            if (ballEvent == BallEventType.Foul)
             {
+                Debug.Log("Foul Ball !");
+            }
+            else if (ballEvent == BallEventType.HBP)
+            {
+                Debug.Log("Hit By Pitch !");
+            }
+            else if (isCollision)  
+            {
+                // collision and no foul/HBP and within the tags => off the wall
                 Debug.Log("Hit !");
                 ballEvent = BallEventType.Hit;
             }
             else
             {
+                // for all triggers
                 Debug.Log(other.tag + " !");
             }
             
-            
+             
         }
         else
         {
             // unknown behaviour
-            Debug.Log("Something happened, we are not quite sure why but probably a hit?");
+            Debug.Log("Something happened, probably a ground ball");
             ballEvent = BallEventType.Hit;
         }
 

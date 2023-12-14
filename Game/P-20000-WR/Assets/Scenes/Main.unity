@@ -1066,7 +1066,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 425994953}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9785426179f23734da497dec44573d60, type: 3}
+  m_Script: {fileID: 11500000, guid: b8186c558602d9f4b9874a7b4384ac42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ballPrefab: {fileID: 4533975412645392368, guid: 055ecce7d230dee48a57e65e1a4354b7, type: 3}
@@ -1075,7 +1075,7 @@ MonoBehaviour:
   strikeZone: {fileID: 1345489962}
   easyMode: 1
   timeOut: 8
-  throwForce: 1000
+  throwForce: 10
 --- !u!1 &428534962
 GameObject:
   m_ObjectHideFlags: 0
@@ -4434,7 +4434,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -6784,6 +6784,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3679949350587967404, guid: d280b0c0522bf404e80278ed7a3eb4ef, type: 3}
       propertyPath: m_Name
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 3679949350587967404, guid: d280b0c0522bf404e80278ed7a3eb4ef, type: 3}
+      propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 6781702284949879733, guid: d280b0c0522bf404e80278ed7a3eb4ef, type: 3}

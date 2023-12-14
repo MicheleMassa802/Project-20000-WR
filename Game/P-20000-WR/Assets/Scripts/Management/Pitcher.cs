@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
-public class PitchingDetector : MonoBehaviour
+public class Pitcher : MonoBehaviour
 {
     public GameObject ballPrefab;
     public GameObject ezBallPrefab;
@@ -16,11 +17,16 @@ public class PitchingDetector : MonoBehaviour
     private float xVariability;
     private float yVariability;
     private Vector3 dot;
+    private Vector3 pitchLocation;
+    private Vector3 handPosition;
+
+    private Vector3 velo;
 
     // Start is called before the first frame update
     void Start()
     {
         easyMode = true;
+        handPosition = pitcherHand.position;
 
         dot = strikeZone.transform.position;
         xVariability = (strikeZone.transform.localScale.x / 2) + 0.2f;
@@ -34,24 +40,25 @@ public class PitchingDetector : MonoBehaviour
     {
         GameObject ball = easyMode ? ezBallPrefab : ballPrefab;
         // instantiate a ball directed at the mound
-        Vector3 throwDirection = pitcherHand.position - RandomLocation();
+        pitchLocation = RandomLocation();
+        Vector3 throwDirection = handPosition - pitchLocation;
 
         // calculations
-        
-
         throwDirection = throwDirection.normalized * throwForce;
         float distance = throwDirection.magnitude;
 
         float throwAngle = 5f;
         float velocity = Mathf.Sqrt((distance * -Physics.gravity.y) / (Mathf.Sin(2 * throwAngle * Mathf.Deg2Rad)));
-        Vector3 initVelo = new Vector3(velocity * Mathf.Cos(throwAngle * Mathf.Deg2Rad), velocity * Mathf.Sin(throwAngle * Mathf.Deg2Rad), 0);
-        
+        Vector3 initVelo = new Vector3(-(velocity * Mathf.Cos(throwAngle * Mathf.Deg2Rad)), velocity * Mathf.Sin(throwAngle * Mathf.Deg2Rad), 0);
+        velo = initVelo;
+
         // spawn ball
         GameObject instantiatedBall = Instantiate(ball, pitcherHand.position, Quaternion.identity);
 
         // apply
         Rigidbody ballRb = instantiatedBall.GetComponent<Rigidbody>();
-        ballRb.velocity = initVelo/3;
+        ballRb.velocity = initVelo;
+
     }
 
     private Vector3 RandomLocation()
@@ -61,6 +68,22 @@ public class PitchingDetector : MonoBehaviour
         float randY = UnityEngine.Random.Range(-yVariability, yVariability);
         Vector3 pitchLoc = new Vector3(dot.x + randX, dot.y + randY, dot.z);
         return pitchLoc;
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawSphere(handPosition, 0.1f);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(pitchLocation, 0.1f);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(handPosition, pitchLocation);
+
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawLine(handPosition, velo);
+
     }
 
 
