@@ -18,7 +18,8 @@ public class MovePlayer : MonoBehaviour
 
     private PlayerInputActions playerInputActions;
 
-
+    public event EventHandler OnPlayerLock;
+    public event EventHandler OnPlayerUnlock;
 
     void Awake()
     {
@@ -39,6 +40,7 @@ public class MovePlayer : MonoBehaviour
     }
 
     #region Player Input
+
     public void Move(Vector2 playerInput)
     {
         if (isLocked)
@@ -63,11 +65,13 @@ public class MovePlayer : MonoBehaviour
         {
             // unlock
             isLocked = false;
+            OnPlayerUnlock?.Invoke(this, EventArgs.Empty);
         }
         else if (isInLockedZone && !isLocked)
         {
             // lock
             isLocked = true;
+            OnPlayerLock?.Invoke(this, EventArgs.Empty);
         }
         // otw ignore (not in locked zone)
     }
@@ -75,6 +79,7 @@ public class MovePlayer : MonoBehaviour
 
 
     #region Triggers && World Interaction
+
     private void OnTriggerEnter(Collider other) {  HandleBattingBoxEnter(other);  }
     private void OnTriggerStay(Collider other) { HandleBattingBoxEnter(other); }
     private void OnTriggerExit(Collider other) { HandleBattingBoxExit(other); }

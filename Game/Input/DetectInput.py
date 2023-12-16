@@ -144,9 +144,6 @@ def WebCamColorFilteringIteration(capture, bat_data, lower_red, upper_red):
         frame, contours, bat_pos, bat_speed, bat_dir)
     DrawStrikeZone(frame)
 
-    if bat_speed == 0.0:
-        print("what")
-
     return frame, mask, {'pos': bat_pos, 'spd': bat_speed, 'dir': bat_dir}
 
 

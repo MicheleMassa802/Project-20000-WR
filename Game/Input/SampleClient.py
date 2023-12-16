@@ -1,6 +1,6 @@
 import socket
 import json
-from SendInput import PORT
+from SendInput import PORT, HOST
 
 # CONSTANTS
 BUFFER_SIZE = 1024
@@ -16,7 +16,7 @@ def DataReceiver():
     s = socket.socket()
 
     # connect to the server on local pc
-    s.connect((socket.gethostname(), PORT))
+    s.connect((HOST, PORT))
     # .gethostname only used at it will run in the same machine
 
     welcome_msg = s.recv(BUFFER_SIZE)

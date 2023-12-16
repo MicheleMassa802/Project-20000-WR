@@ -5,6 +5,7 @@ from Utils import GetLimits
 import DetectInput as DI
 
 # CONSTANTS
+HOST = "127.0.0.1"
 PORT = 12345
 
 
@@ -22,7 +23,7 @@ def ColorFilteringDataSender(videoSourceNum: int):
 
     # Create the socket and bind it
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # ipv4, tcp
-    s.bind((socket.gethostname(), PORT))
+    s.bind((HOST, PORT))
 
     s.listen(1)  # listen for a single connection (the game client)
 
@@ -43,33 +44,39 @@ def ColorFilteringDataSender(videoSourceNum: int):
     # manual thresholds based on testing
     lower_red, upper_red = GetLimits(DI.RED)
 
-    while True:
-        bat_data = {'pos': bat_pos, 'spd': bat_speed, 'dir': bat_dir}
-        frame, mask, bat_data = DI.WebCamColorFilteringIteration(
-            cap, bat_data, lower_red, upper_red)
+    try:
+        while True:
+            bat_data = {'pos': bat_pos, 'spd': bat_speed, 'dir': bat_dir}
+            frame, mask, bat_data = DI.WebCamColorFilteringIteration(
+                cap, bat_data, lower_red, upper_red)
 
-        # register updates & modify pos to be json serializeable
-        bat_pos = bat_data['pos']
-        bat_speed = bat_data['spd']
-        bat_dir = bat_data['dir']
+            # register updates & modify pos to be json serializeable
+            bat_pos = bat_data['pos']
+            bat_speed = bat_data['spd']
+            bat_dir = bat_data['dir']
 
-        if not (bat_pos is None):
-            bat_data['pos'] = (int(bat_pos[0]), int(bat_pos[1]))
+            if not (bat_pos is None):
+                bat_data['pos'] = (int(bat_pos[0]), int(bat_pos[1]))
 
-        client_s.send(json.dumps(bat_data).encode())
+            client_s.send(json.dumps(bat_data).encode())
 
-        cv2.imshow("OG", frame)
-        cv2.imshow("Mask", mask)
+            cv2.imshow("OG", frame)
+            cv2.imshow("Mask", mask)
 
-        # exit loop on q key-press
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+            # exit loop on q key-press
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
 
-    cap.release()  # stop using camera
-    cv2.destroyAllWindows()
+    except socket.error:
+        # game stops => close server down
+        print("Client disconnected")
 
-    # close the connection
-    s.close()
+    finally:
+        cap.release()  # stop using camera
+        cv2.destroyAllWindows()
+
+        # close the connection
+        s.close()
 
 
 if __name__ == "__main__":
