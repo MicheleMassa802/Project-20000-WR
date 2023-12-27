@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,6 +10,7 @@ public class MovePlayer : MonoBehaviour
 
     [SerializeField] bool isLocked;
     [SerializeField] bool isInLockedZone;
+    private Vector3 lockedPos;
 
     public Transform orientation;
 
@@ -66,12 +68,16 @@ public class MovePlayer : MonoBehaviour
             // unlock
             isLocked = false;
             OnPlayerUnlock?.Invoke(this, EventArgs.Empty);
+            playerRB.isKinematic = false;  // resume movement
         }
         else if (isInLockedZone && !isLocked)
         {
             // lock
             isLocked = true;
             OnPlayerLock?.Invoke(this, EventArgs.Empty);
+            // set player position to middle of the respective plate
+            playerRB.isKinematic = true;  // stop movement
+            transform.position = lockedPos;
         }
         // otw ignore (not in locked zone)
     }
@@ -92,6 +98,8 @@ public class MovePlayer : MonoBehaviour
         if (other.CompareTag("BatBox") && !isInLockedZone)
         {
             isInLockedZone = true;
+            lockedPos = other.gameObject.transform.position;
+            lockedPos.y += transform.position.y;
         }
     }
 

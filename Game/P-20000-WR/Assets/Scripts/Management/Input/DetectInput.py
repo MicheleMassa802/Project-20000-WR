@@ -131,6 +131,7 @@ def WebCamColorFilteringIteration(capture, bat_data, lower_red, upper_red):
 
     # while True -> here goes what would go inside the usual loop
     _, frame = capture.read()
+    frame = cv2.flip(frame, 1)
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
     # everything within these ranges
