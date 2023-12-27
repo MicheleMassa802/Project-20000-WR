@@ -27,7 +27,6 @@ public class DetectBatClient : MonoBehaviour
         movePlayerScript.OnPlayerLock += LockPlayer;
         movePlayerScript.OnPlayerUnlock += UnlockPlayer;
 
-
         // connect to server as the one and only client
         ConnectToServer();
     }
