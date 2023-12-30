@@ -34,7 +34,7 @@ Filter the color RED to get a mask of the bat using cv2 contours.
 """
 
 
-def WebCamColorFilteringV1(videoSourceNum: int):
+def WebCamColorFilteringV1(videoSourceNum: int, righty: bool):
 
     bat_pos = None
     bat_speed = None
@@ -44,6 +44,7 @@ def WebCamColorFilteringV1(videoSourceNum: int):
 
     while True:
         _, frame = capture.read()
+        frame = cv2.flip(frame, 1)
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         # manual thresholds based on testing
@@ -57,9 +58,10 @@ def WebCamColorFilteringV1(videoSourceNum: int):
             mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         bat_pos, bat_speed, bat_dir = BatData(
-            frame, contours, bat_pos, bat_speed, bat_dir)
-        cv2.circle(frame, bat_pos, 1, BLUE, -1)
+            frame, contours, bat_pos, bat_speed, bat_dir, righty)
+        cv2.circle(frame, bat_pos, 5, BLUE, -1)
         DrawStrikeZone(frame)
+        DrawBatLine(frame, bat_pos, righty)
 
         cv2.imshow("OG", frame)
         cv2.imshow("Mask", mask)
@@ -77,7 +79,7 @@ Filter the color YELLOW to get a mask of the bat using cv2 contours.
 """
 
 
-def WebCamColorFilteringV2(videoSourceNum: int):
+def WebCamColorFilteringV2(videoSourceNum: int, righty: bool):
 
     bat_pos = None
     bat_speed = None
@@ -90,6 +92,7 @@ def WebCamColorFilteringV2(videoSourceNum: int):
 
     while True:
         _, frame = capture.read()
+        frame = cv2.flip(frame, 1)
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         # everything within these ranges
@@ -100,7 +103,7 @@ def WebCamColorFilteringV2(videoSourceNum: int):
             mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         bat_pos, bat_speed, bat_dir = BatData(
-            frame, contours, bat_pos, bat_speed, bat_dir)
+            frame, contours, bat_pos, bat_speed, bat_dir, righty)
         DrawStrikeZone(frame)
 
         cv2.imshow("OG", frame)
@@ -122,7 +125,7 @@ Return the current frame, its mask, and the tuple of bat data.
 """
 
 
-def WebCamColorFilteringIteration(capture, bat_data, lower_red, upper_red):
+def WebCamColorFilteringIteration(capture, bat_data, lower_red, upper_red, righty):
 
     # the bat data from the previous frame
     bat_pos = bat_data['pos']
@@ -142,8 +145,9 @@ def WebCamColorFilteringIteration(capture, bat_data, lower_red, upper_red):
         mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     bat_pos, bat_speed, bat_dir = BatData(
-        frame, contours, bat_pos, bat_speed, bat_dir)
+        frame, contours, bat_pos, bat_speed, bat_dir, righty)
     DrawStrikeZone(frame)
+    DrawBatLine(frame, bat_pos, righty)
 
     return frame, mask, {'pos': bat_pos, 'spd': bat_speed, 'dir': bat_dir}
 
@@ -156,7 +160,7 @@ Returns the new bat position
 """
 
 
-def BatData(frame, contours, prev_pos, prev_speed, prev_dir):
+def BatData(frame, contours, prev_pos, prev_speed, prev_dir, righty):
 
     curr_pos = prev_pos  # default
     curr_speed = prev_speed
@@ -210,6 +214,19 @@ def DrawStrikeZone(frame):
     cv2.rectangle(frame, top_left, bottom_right, RED, 2)
 
 
+def DrawBatLine(frame, batCenter, isRighty):
+
+    # "hand" coords
+    base_x = IMAGE_DIM[1] // 4 if isRighty else (IMAGE_DIM[1] * 3) // 4
+    base_y = IMAGE_DIM[1] // 2
+
+    # bat end coords
+
+    if batCenter is not None:
+        cv2.line(frame, (base_x, base_y),
+                 (batCenter[0], batCenter[1]), GREEN, 5)
+
+
 ###############################################################################
 # Main Function
 ###############################################################################
@@ -219,7 +236,7 @@ def Main():
 
     # live video
     print(f"\nShowing live video feed.\n\nPress Q to exit.")
-    WebCamColorFilteringV1(0)
+    WebCamColorFilteringV1(0, True)
 
 
 if __name__ == "__main__":
