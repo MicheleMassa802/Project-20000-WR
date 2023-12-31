@@ -10,9 +10,19 @@ HOST = "127.0.0.1"
 PORT = 12345
 
 
+###############################################################################
+# File for sending bat data through a local server to the Unity Game
+###############################################################################
+
+
 """
 Function making use of DetectInput.py to send bat data across a local server
 to Unity.
+
+Args:
+- videoSourceNum: index of the camera to use for video input
+- righty: boolean keeping track of whether the batter is a righty or a lefty
+
 """
 
 
@@ -78,6 +88,11 @@ def ColorFilteringDataSender(videoSourceNum: int, righty: bool):
 
         # close the connection
         s.close()
+
+
+###############################################################################
+# Rest
+###############################################################################
 
 
 if __name__ == "__main__":
