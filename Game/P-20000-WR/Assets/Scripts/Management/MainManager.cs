@@ -19,7 +19,7 @@ public class MainManager : MonoBehaviour
         process = new Process();
         // open a python program under the given path 
         process.StartInfo.FileName = "python";
-        process.StartInfo.Arguments = processPath;
+        process.StartInfo.Arguments = processPath + " --isRighty True";
 
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.RedirectStandardOutput = true;

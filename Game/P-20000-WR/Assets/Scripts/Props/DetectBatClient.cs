@@ -76,6 +76,8 @@ public class DetectBatClient : MonoBehaviour
             Debug.Log(batData);
             List<float> parsedData = BatPositionUtil.ParseDic(batData);  // returns a 4 len array
             transform.position = BatPositionUtil.CalculateBatPos(parsedData);
+            transform.rotation = Quaternion.Euler(parsedData[3], transform.rotation.eulerAngles.y,
+                transform.rotation.eulerAngles.z);
         } 
     }
 

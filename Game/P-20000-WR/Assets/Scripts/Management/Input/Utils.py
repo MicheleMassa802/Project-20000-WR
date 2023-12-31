@@ -95,6 +95,7 @@ def DrawStrikeZone(frame):
 
 
 """
+(CURRENTLY OUT OF SERVICE)
 Helper to draw lines on the screen displaying key info such as bat
 position and angle. No return.
 

@@ -59,7 +59,7 @@ def ColorFilteringDataSender(videoSourceNum: int, righty: bool):
         while True:
             bat_data = {'pos': bat_pos, 'spd': bat_speed, 'dir': bat_dir}
             frame, mask, bat_data = DI.WebCamColorFilteringIteration(
-                cap, bat_data, lower_red, upper_red, righty)
+                cap, DI.BatDataV2, bat_data, lower_red, upper_red, righty)
 
             # register updates & modify pos to be json serializeable
             bat_pos = bat_data['pos']
@@ -101,12 +101,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--isRighty",
-        type=bool,
+        type=str,  # to parse multiple values
         required=True,
-        help="A bool stating wether the batter is a righty or lefty"
+        help="A bool stating wether the batter is a righty or lefty \n" +
+        "(use true, T, t, Y, y, yes, or 1 for a positive value)"
     )
-    arg = parser.parse_args()
+    args = parser.parse_args()
+    isRighty = args.isRighty.lower() in ['true', '1', 't', 'y', 'yes']
 
     # live video
     print(f"\nShowing live video feed.\n\nPress Q to exit.")
-    ColorFilteringDataSender(0, arg.isRighty)
+    ColorFilteringDataSender(0, isRighty)

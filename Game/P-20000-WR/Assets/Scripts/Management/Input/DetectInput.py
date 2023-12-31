@@ -31,15 +31,18 @@ YELLOW = (0, 255, 255)
 
 """
 Filter video input for the color RED to get a mask of the bat object using cv2 contours.
-This uses a bat made up of a stick with a single large red zone in its hitting section.
+This uses either a bat made up of a stick with a single large red zone in its hitting section (V1)
+or a bat made up of a stick with two small red zones, one at the base and one at the top of the
+bat's hitting section (V2).
 
 Args:
 - videoSourceNum: index of the camera to use for video input
+- func: the algorithm implementation for bat data generation
 - righty: boolean keeping track of whether the batter is a righty or a lefty
 """
 
 
-def WebCamColorFilteringV1(videoSourceNum: int, righty: bool):
+def WebCamColorFiltering(videoSourceNum: int, func, righty: bool):
 
     bat_pos = None
     bat_speed = None
@@ -62,61 +65,9 @@ def WebCamColorFilteringV1(videoSourceNum: int, righty: bool):
         contours, _ = cv2.findContours(
             mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-        bat_pos, bat_speed, bat_dir = BatDataV1(
-            frame, contours, bat_pos, bat_speed, bat_dir, righty)
-        cv2.circle(frame, bat_pos, 8, BLUE, -1)
-        DrawStrikeZone(frame)
-        DrawBatLine(frame, bat_pos, righty)
-
-        cv2.imshow("OG", frame)
-        cv2.imshow("Mask", mask)
-
-        # exit loop
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-    capture.release()  # stop using camera
-    cv2.destroyAllWindows()
-
-
-"""
-Filter video input for the color RED to get a mask of the bat using cv2 contours.
-This uses a bat made up of a stick with two small red zones, one at the base
-and one at the top of the bat's hitting section.
-
-Args:
-- videoSourceNum: index of the camera to use for video input
-- righty: boolean keeping track of whether the batter is a righty or a lefty
-"""
-
-
-def WebCamColorFilteringV2(videoSourceNum: int, righty: bool):
-
-    bat_pos = None
-    bat_speed = None
-    bat_dir = None
-
-    capture = cv2.VideoCapture(videoSourceNum)
-
-    while True:
-        _, frame = capture.read()
-        frame = cv2.flip(frame, 1)
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-        # manual thresholds based on testing
-        lower_red, upper_red = GetLimits(RED, 30)
-
-        # everything within these ranges
-        mask = cv2.inRange(hsv, lower_red, upper_red)
-
-        # calculate the contours and their centers such that we can get the position of the bat
-        contours, _ = cv2.findContours(
-            mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-        bat_pos, bat_speed, bat_dir = BatDataV2(
+        bat_pos, bat_speed, bat_dir = func(
             frame, contours, bat_pos, bat_speed, bat_dir, righty)
 
-        cv2.circle(frame, bat_pos, 8, BLUE, -1)
         DrawStrikeZone(frame)
         # DrawBatLine(frame, bat_pos, righty)
 
@@ -181,6 +132,8 @@ def BatDataV1(frame, contours, prev_pos, prev_speed, prev_dir, righty):
             cv2.putText(frame, str(curr_direction), (10, 100),
                         font, 1, BLUE, 1, cv2.LINE_AA)
 
+    cv2.circle(frame, curr_pos, 8, BLUE, -1)
+
     # Update the position of the bat
     return curr_pos, curr_speed, curr_direction
 
@@ -204,7 +157,7 @@ def BatDataV2(frame, contours, prev_pos, prev_speed, prev_dir, righty):
 
     curr_pos = prev_pos  # default
     curr_speed = prev_speed
-    curr_direction = prev_dir
+    curr_direction = prev_dir  # bat angle
 
     if len(contours) > 1:
 
@@ -231,7 +184,8 @@ def BatDataV2(frame, contours, prev_pos, prev_speed, prev_dir, righty):
         if prev_pos is not None:
             diff = curr_pos - prev_pos
             curr_speed = np.linalg.norm(diff)
-            curr_direction = np.arctan2(diff[1], diff[0])
+            curr_direction = -np.degrees(np.arctan2(
+                top[1] - bottom[1], top[0] - bottom[0]))
 
             font = cv2.FONT_HERSHEY_SIMPLEX
             cv2.putText(frame, str(curr_pos), (10, 30),
@@ -240,6 +194,8 @@ def BatDataV2(frame, contours, prev_pos, prev_speed, prev_dir, righty):
                         font, 1, BLUE, 1, cv2.LINE_AA)
             cv2.putText(frame, str(curr_direction), (10, 100),
                         font, 1, BLUE, 1, cv2.LINE_AA)
+
+    cv2.circle(frame, curr_pos, 8, BLUE, -1)
 
     # Update the position of the bat
     return curr_pos, curr_speed, curr_direction
@@ -280,10 +236,12 @@ def AssignTopBottom(coords1, coords2, righty):
 
 """
 Performs and iteration of the WHILE TRUE CV2 loop when filtering for a color
-between lower_red and upper_red while calculating some extra data.
+between lower_red and upper_red while calculating some extra data using the specified
+implementation.
 
 Args:
 - capture: cv2 video capture
+- func: the algorithm implementation to make use of to generate the bat data
 - bat_data: a dictionary of form {'pos': (x,y), 'spd': s, 'dir': d}
 - lower/upper red: HSV formatted tupples detailing the ranges to look for
 - righty: boolean keeping track of whether the batter is a righty or a lefty
@@ -293,7 +251,7 @@ Return:
 """
 
 
-def WebCamColorFilteringIterationV1(capture, bat_data, lower_red, upper_red, righty):
+def WebCamColorFilteringIteration(capture, func, bat_data, lower_red, upper_red, righty):
 
     # the bat data from the previous frame
     bat_pos = bat_data['pos']
@@ -312,10 +270,10 @@ def WebCamColorFilteringIterationV1(capture, bat_data, lower_red, upper_red, rig
     contours, _ = cv2.findContours(
         mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    bat_pos, bat_speed, bat_dir = BatDataV1(
+    bat_pos, bat_speed, bat_dir = func(
         frame, contours, bat_pos, bat_speed, bat_dir, righty)
     DrawStrikeZone(frame)
-    DrawBatLine(frame, bat_pos, righty)
+    # DrawBatLine(frame, bat_pos, righty)
 
     return frame, mask, {'pos': bat_pos, 'spd': bat_speed, 'dir': bat_dir}
 
@@ -323,7 +281,6 @@ def WebCamColorFilteringIterationV1(capture, bat_data, lower_red, upper_red, rig
 ###############################################################################
 # Main Function
 ###############################################################################
-
 """
 Function to be called when running this script.
 
@@ -336,7 +293,7 @@ def Main():
 
     # live video
     print(f"\nShowing live video feed.\n\nPress Q to exit.")
-    WebCamColorFilteringV2(0, True)
+    WebCamColorFiltering(0, BatDataV2, True)
 
 
 if __name__ == "__main__":

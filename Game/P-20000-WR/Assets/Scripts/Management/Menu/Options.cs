@@ -19,6 +19,14 @@ public class Options : MonoBehaviour
     private float minWildness = 0.0f;
     private float maxWildnessExtra = 100.0f;
 
+    public bool isRighty;
+
+
+    public void BattingSideSetter(bool inputValue)
+    {
+        isRighty = inputValue;
+    }
+
     public void PitchingSpeedSetter(float inputValue)
     {
         speedValue = inputValue * maxSpeedExtra + minSpeed;
@@ -35,5 +43,17 @@ public class Options : MonoBehaviour
     {
         OptionsMenu.SetActive(false);
         MainMenu.SetActive(true);
+    }
+
+    public Dictionary<string, int> GetOptionsMenuInfo()
+    {
+        Dictionary<string, int> result = new()
+        {
+            { "PitchSpeed", (int)speedValue },
+            { "PitchWildness", (int)wildnessValue },
+            { "IsRighty", isRighty ? 1 : 0 }
+        };
+
+        return result;
     }
 }
