@@ -67,7 +67,7 @@ def GetLimits(color, tolerance=10):
     color = np.uint8([[color]])
     hsv_color = cv2.cvtColor(color, cv2.COLOR_BGR2HSV)
 
-    lower_limit = hsv_color[0][0][0] - tolerance, 100, 100
+    lower_limit = hsv_color[0][0][0] - tolerance, 100, 20
     upper_limit = hsv_color[0][0][0] + tolerance, 255, 255
 
     lower_limit = np.array(lower_limit, dtype=np.uint8)

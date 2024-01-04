@@ -17,8 +17,9 @@ public class Pitcher : MonoBehaviour
 
     private float zVariability;
     private float yVariability;
+    private float variableOffset;
     private const float ballWeight = 0.15f;
-    private const float flightTime = 1.0f;
+    private float flightTime;
 
     private Vector3 dot;
     private Vector3 pitchLocation;
@@ -33,9 +34,7 @@ public class Pitcher : MonoBehaviour
         handPosition = pitcherHand.position;
 
         dot = strikeZone.transform.position;
-        zVariability = (strikeZone.transform.localScale.x / 2) + 0.2f;
-        yVariability = (strikeZone.transform.localScale.y / 2) + 0.2f;
-
+        SetupPitchingSettings();
         InvokeRepeating("Pitch", 3.0f, 10f);
     }
 
@@ -64,11 +63,12 @@ public class Pitcher : MonoBehaviour
 
     private Vector3 RandomLocation()
     {
-        // generate a random location to throw the ball at
         float randZ = UnityEngine.Random.Range(-zVariability, zVariability);
         float randY = UnityEngine.Random.Range(-yVariability, yVariability);
+
         Vector3 pitchLoc = new Vector3(dot.x, dot.y + randY, dot.z + randZ);
         return pitchLoc;
+
     }
 
     void OnDrawGizmos()
@@ -87,6 +87,55 @@ public class Pitcher : MonoBehaviour
 
     }
 
+    private void SetupPitchingSettings()
+    {
 
+        // wildness settings
+        int wildness = PlayerPrefs.GetInt("wildness");
+
+        // come up with the variability ranges based on the player's set wildness
+        variableOffset = 0;
+
+        if (wildness >= 90)
+        {
+            variableOffset = 1.0f;
+        }
+        else if (wildness >= 70)
+        {
+            variableOffset = 0.5f;
+        }
+        else if (wildness >= 50)
+        {
+            variableOffset = 0.2f;
+        }
+        // otw, no offset from full strike zone
+
+        // set variability for randomness calculations
+        zVariability = 0.0f;
+        yVariability = 0.0f;
+
+        if (wildness >= 25)
+        {
+            // use full strike zone + offset
+            zVariability = (strikeZone.transform.localScale.x / 2) + variableOffset;
+            yVariability = (strikeZone.transform.localScale.y / 2) + variableOffset;
+        }
+        else if (wildness >= 1)
+        {
+            // dots + 0.15 offset
+            zVariability = 0.15f;
+            yVariability = 0.15f;
+        }
+        // wildness == 0 means dots
+
+
+        // speed settings
+        int speed = PlayerPrefs.GetInt("speed");
+
+        // 90 mph => 0.5 seconds flight time (realistically)
+        // + 0.3f game offset -> to make it fun yo :<)
+
+        flightTime = (90.0f / speed * 0.5f) + 0.3f;
+    }
 
 }

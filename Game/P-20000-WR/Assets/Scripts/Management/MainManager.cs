@@ -16,10 +16,14 @@ public class MainManager : MonoBehaviour
 
     void Start()
     {
+        // get the argument
+        int rightyInt = PlayerPrefs.GetInt("isRighty");
+        string isRighty = rightyInt == 0 ? "False" : "True";
+
         process = new Process();
         // open a python program under the given path 
         process.StartInfo.FileName = "python";
-        process.StartInfo.Arguments = processPath + " --isRighty True";
+        process.StartInfo.Arguments = processPath + " --isRighty " + isRighty;
 
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.RedirectStandardOutput = true;
