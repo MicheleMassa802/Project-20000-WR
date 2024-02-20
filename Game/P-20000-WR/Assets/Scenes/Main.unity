@@ -750,7 +750,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5918946985254214213, guid: 77c0d3d05c2538d4bb5f5d4105f5b5a3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.611
       objectReference: {fileID: 0}
     - target: {fileID: 5918946985254214213, guid: 77c0d3d05c2538d4bb5f5d4105f5b5a3, type: 3}
       propertyPath: m_LocalPosition.y
@@ -758,7 +758,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5918946985254214213, guid: 77c0d3d05c2538d4bb5f5d4105f5b5a3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5918946985254214213, guid: 77c0d3d05c2538d4bb5f5d4105f5b5a3, type: 3}
       propertyPath: m_LocalRotation.w
@@ -795,6 +795,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2801344529899503675, guid: 77c0d3d05c2538d4bb5f5d4105f5b5a3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 816879362}
+    - targetCorrespondingSourceObject: {fileID: 2801344529899503675, guid: 77c0d3d05c2538d4bb5f5d4105f5b5a3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 816879363}
   m_SourcePrefab: {fileID: 100100000, guid: 77c0d3d05c2538d4bb5f5d4105f5b5a3, type: 3}
 --- !u!1 &303036165
 GameObject:
@@ -2746,6 +2749,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   batRange: {fileID: 333241151}
+--- !u!95 &816879363
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 816879360}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a1bdf3ced466072439dfa7d22b93739f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &861708001
 GameObject:
   m_ObjectHideFlags: 0
