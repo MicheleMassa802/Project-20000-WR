@@ -41,6 +41,7 @@ public class DetectBallStat : MonoBehaviour
     private void HandleContact(Collider other, bool isCollision)
     {
         BallEventType ballEvent;
+        return;  // TO BE REMOVED
         if (tags.TryGetValue(other.tag, out ballEvent))
         {
             if (ballEvent == BallEventType.Foul)

@@ -14,7 +14,38 @@ public class MainManager : MonoBehaviour
     private const string processPath = @"Assets\Scripts\Management\Input\SendInput.py";
 
 
-    void Start()
+    void OnApplicationQuit()
+    {
+        // if using BatTM, stop script
+        int inputType = PlayerPrefs.GetInt("inputType");
+        if (inputType == 2)
+        {
+            StopBatInputDetection();
+        }
+    }
+
+    // the function handling which input type to take when stepping into the plate
+    public void StartGame()
+    {
+        // get the argument
+        int inputType = PlayerPrefs.GetInt("inputType");
+
+        // M&K specific
+        if (inputType == 2) { StartBatInputDetection(); } 
+
+    }
+
+    public void StopGame()
+    {
+        // get the argument
+        int inputType = PlayerPrefs.GetInt("inputType");
+
+        // M&K specific
+        if (inputType == 2) { StopBatInputDetection(); }
+
+    }
+
+    private void StartBatInputDetection()
     {
         // get the argument
         int rightyInt = PlayerPrefs.GetInt("isRighty");
@@ -30,9 +61,10 @@ public class MainManager : MonoBehaviour
         process.StartInfo.RedirectStandardError = true;
 
         process.Start();
+        UnityEngine.Debug.Log("Input detection script started");
     }
 
-    void OnApplicationQuit()
+    private void StopBatInputDetection()
     {
         process.Kill();
         UnityEngine.Debug.Log("Input detection script stopped");

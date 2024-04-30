@@ -68,6 +68,7 @@ public class MovePlayer : MonoBehaviour
             // unlock
             isLocked = false;
             OnPlayerUnlock?.Invoke(this, EventArgs.Empty);
+            Debug.Log("PlayerUnlock");
             playerRB.isKinematic = false;  // resume movement
         }
         else if (isInLockedZone && !isLocked)
@@ -76,6 +77,7 @@ public class MovePlayer : MonoBehaviour
             isLocked = true;
             OnPlayerLock?.Invoke(this, EventArgs.Empty);
             // set player position to middle of the respective plate
+            Debug.Log("PlayerLock");
             playerRB.isKinematic = true;  // stop movement
             transform.position = lockedPos;
         }
@@ -93,21 +95,34 @@ public class MovePlayer : MonoBehaviour
 
     private void HandleBattingBoxEnter(Collider other)
     {
+
+        if (isLocked) { return; }
+
         // when triggering the locked zone for batting
         // listen for player input
-        if (other.CompareTag("BatBox") && !isInLockedZone)
+        if (other.CompareTag("BatBoxL") && !isInLockedZone)
         {
             isInLockedZone = true;
             lockedPos = other.gameObject.transform.position;
             lockedPos.y += transform.position.y;
+            PlayerPrefs.SetInt("isRighty", 0);
+        } 
+        else if (other.CompareTag("BatBoxR") && !isInLockedZone)
+        {
+            isInLockedZone = true;
+            lockedPos = other.gameObject.transform.position;
+            lockedPos.y += transform.position.y;
+            PlayerPrefs.SetInt("isRighty", 1);
         }
     }
 
     private void HandleBattingBoxExit(Collider other)
     {
+
         // when triggering the locked zone for batting
         // listen for player input
-        if (other.CompareTag("BatBox") && isInLockedZone)
+        if ((other.CompareTag("BatBoxR") || other.CompareTag("BatBoxL"))
+                && isInLockedZone && !isLocked)
         {
             isInLockedZone = false;
         }
