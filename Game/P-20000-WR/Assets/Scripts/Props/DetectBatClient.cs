@@ -70,7 +70,6 @@ public class DetectBatClient : MonoBehaviour
 
     private void LockPlayer(object sender, EventArgs e)
     {
-        Debug.Log("---Detect Bat");
         // if input type is BatTM, start running the python program and run the server
         int inputType = PlayerPrefs.GetInt("inputType");
         if (inputType == 2)
@@ -92,7 +91,6 @@ public class DetectBatClient : MonoBehaviour
 
     private void UnlockPlayer(object sender, EventArgs e)
     {
-        Debug.Log("---De-Detect Bat");
         // if using BatTM, stop script
         int inputType = PlayerPrefs.GetInt("inputType");
         if (inputType == 2)

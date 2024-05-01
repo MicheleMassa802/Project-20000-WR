@@ -83,7 +83,7 @@ public class Options : MonoBehaviour
 
 
     #region Short functions triggered by events (not UI)
-    private void StepOntoPlate(object sender, EventArgs e) { Debug.Log("Show Options"); optionsMenu.SetActive(true); }
+    private void StepOntoPlate(object sender, EventArgs e) { optionsMenu.SetActive(true); }
     private void StepOffPlate(object sender, EventArgs e) { optionsMenu.SetActive(false); }
 
     public void StartGame()
