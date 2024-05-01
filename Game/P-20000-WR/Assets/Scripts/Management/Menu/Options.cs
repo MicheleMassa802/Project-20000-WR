@@ -12,8 +12,7 @@ public class Options : MonoBehaviour
     public enum InputTypes
     {
         MouseAndKeyboard,  // 0
-        GamePad,  // 1
-        BatTM  // 2
+        BatTM  // 1
     }
 
     public TextMeshProUGUI speedText = null;
@@ -31,7 +30,9 @@ public class Options : MonoBehaviour
 
     public GameObject optionsMenu;
     private MovePlayer movePlayerScript;  // fires off locking/unlocking event
-    
+
+    public event EventHandler OnGameStart;
+
 
     private void Start()
     {
@@ -90,6 +91,7 @@ public class Options : MonoBehaviour
     {
         optionsMenu.SetActive(false);
         // Invoke event for start of game
+        OnGameStart?.Invoke(this, EventArgs.Empty);
         Debug.Log("PLAYBALL");
 
     }

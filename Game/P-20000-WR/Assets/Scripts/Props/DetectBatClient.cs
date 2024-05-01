@@ -17,31 +17,18 @@ public class DetectBatClient : MonoBehaviour
     private TcpClient client;
     private NetworkStream stream;
     
-    private MovePlayer movePlayerScript;  // fires off locking/unlocking event
     private bool readData = false;
+
+    private bool clientOpen = false;
 
     private Vector3 wrtPlayerPos;
     public GameObject batRange;
 
-    public GameObject mainManagerObj;
-    private MainManager mainManager;
-
-
-    private void Start()
-    {
-        mainManager = mainManagerObj.GetComponent<MainManager>();
-
-        // event handling
-        movePlayerScript = GameObject.Find("Player").GetComponent<MovePlayer>();
-        movePlayerScript.OnPlayerLock += LockPlayer;
-        movePlayerScript.OnPlayerUnlock += UnlockPlayer;
-
-    }
 
 
     IEnumerator ReceiveData()
     {
-        while (true)
+        while (readData)
         {
             if (stream.DataAvailable)
             {
@@ -65,45 +52,34 @@ public class DetectBatClient : MonoBehaviour
             transform.rotation = Quaternion.Euler(parsedData[3], transform.rotation.eulerAngles.y,
                 transform.rotation.eulerAngles.z);
         } 
-    }
-
-
-    private void LockPlayer(object sender, EventArgs e)
-    {
-        // if input type is BatTM, start running the python program and run the server
-        int inputType = PlayerPrefs.GetInt("inputType");
-        if (inputType == 2)
-        {
-            mainManager.StartGame();
-            // then connect to the server
-            ConnectToServer();
-
-            // move bat to center of bat range and start reading in input data
-            readData = true;
-            wrtPlayerPos = transform.position;
-            transform.position = batRange.transform.position;
-        }
-
-        // otherwise, we handle input via M&K/GamePad
-
 
     }
 
-    private void UnlockPlayer(object sender, EventArgs e)
-    {
-        // if using BatTM, stop script
-        int inputType = PlayerPrefs.GetInt("inputType");
-        if (inputType == 2)
-        {
-            // DC from the server
-            client.Close();
-            // then stop running it
-            mainManager.StopGame();
 
-            // move bat back to player's control and stop receiving data
-            readData = false;
-            transform.position = wrtPlayerPos;
-        }
+    public void ConnectClient()
+    {
+        // move bat to center of bat range and start reading in input data
+        readData = true;
+        wrtPlayerPos = transform.position;
+        transform.position = batRange.transform.position;
+
+        // only called with BatTM input
+        ConnectToServer();
+
+    }
+
+    public void DcClient()
+    {
+        // only called with BatTM input
+
+        // move bat back to player's control and stop receiving data
+        readData = false;
+        transform.position = wrtPlayerPos;
+
+        // stop reading in input data
+        StopCoroutine(ReceiveData());
+        // DC from the server
+        client.Close();
 
     }
 
@@ -117,6 +93,7 @@ public class DetectBatClient : MonoBehaviour
         int bytes = stream.Read(data, 0, data.Length);
         string welcomeMsg = Encoding.UTF8.GetString(data, 0, bytes);
         Debug.Log(welcomeMsg);
+        clientOpen = true;
 
         // after detecting the welcome message, wait for player to get in the
         // box to parse all bat data
@@ -127,7 +104,7 @@ public class DetectBatClient : MonoBehaviour
     void OnApplicationQuit()
     {
         int inputType = PlayerPrefs.GetInt("inputType");
-        if (inputType == 2)
+        if (inputType == 1 && clientOpen)
         {
             client.Close();
         }

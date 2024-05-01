@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,40 +13,59 @@ public class MainManager : MonoBehaviour
 
     private Process process;
     private const string processPath = @"Assets\Scripts\Management\Input\SendInput.py";
+    private bool processRunning = false;
+
+    private MovePlayer movePlayerScript;  // fires off locking/unlocking event
+    private DetectBatClient detectBatClientScript;
+    private Options optionsScript;
 
 
-    void OnApplicationQuit()
+    private void Start()
     {
-        // if using BatTM, stop script
-        int inputType = PlayerPrefs.GetInt("inputType");
-        if (inputType == 2)
-        {
-            StopBatInputDetection();
-        }
+        // event handling
+        movePlayerScript = GameObject.Find("Player").GetComponent<MovePlayer>();
+        detectBatClientScript = GameObject.Find("Bat").GetComponent<DetectBatClient>();
+        optionsScript = GameObject.Find("BattingPopup").GetComponent<Options>();
+
+        optionsScript.OnGameStart += StartGame;
+        movePlayerScript.OnPlayerUnlock += StopGame;
     }
 
     // the function handling which input type to take when stepping into the plate
-    public void StartGame()
+    public void StartGame(object sender, EventArgs e)
     {
         // get the argument
         int inputType = PlayerPrefs.GetInt("inputType");
 
-        // M&K specific
-        if (inputType == 2) { StartBatInputDetection(); } 
+        // BatTM specific
+        if (inputType == 1) { 
+            UnityEngine.Debug.Log("Starting scripts");
+            
+            // start up host, then client and establish a connection
+            StartBatInputHost();
+            detectBatClientScript.ConnectClient();
+        }
+
+        // otherwise, we handle input via M&K
 
     }
 
-    public void StopGame()
+    public void StopGame(object sender, EventArgs e)
     {
         // get the argument
         int inputType = PlayerPrefs.GetInt("inputType");
 
-        // M&K specific
-        if (inputType == 2) { StopBatInputDetection(); }
+        // BatTM specific
+        if (inputType == 1) {
+            UnityEngine.Debug.Log("Stopping scripts");
+            StopBatInputHost();
+            detectBatClientScript.DcClient();
+
+        }
 
     }
 
-    private void StartBatInputDetection()
+    private void StartBatInputHost()
     {
         // get the argument
         int rightyInt = PlayerPrefs.GetInt("isRighty");
@@ -61,13 +81,25 @@ public class MainManager : MonoBehaviour
         process.StartInfo.RedirectStandardError = true;
 
         process.Start();
+        processRunning = true;
         UnityEngine.Debug.Log("Input detection script started");
     }
 
-    private void StopBatInputDetection()
+    private void StopBatInputHost()
     {
         process.Kill();
         UnityEngine.Debug.Log("Input detection script stopped");
+        processRunning = false;
+    }
+
+    void OnApplicationQuit()
+    {
+        // if using BatTM, stop script
+        int inputType = PlayerPrefs.GetInt("inputType");
+        if (inputType == 1 && processRunning)
+        {
+            StopBatInputHost();
+        }
     }
 
 }
