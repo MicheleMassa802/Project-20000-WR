@@ -8,8 +8,8 @@ using UnityEngine;
 
 public class DetectBatClient : MonoBehaviour
 {
-    // in charge of detecting the bat IRL and moving the game object accordingly
-    // attached to the bat object based on the respective batting range
+    // In charge of detecting the movement of the cursor (either directly or via the
+    // BatTM IRL detection) and calculating the movement of the in-game bat
 
     const int PORT = 12345;
     const string HOST = "127.0.0.1";
@@ -18,7 +18,6 @@ public class DetectBatClient : MonoBehaviour
     private NetworkStream stream;
     
     private bool readData = false;
-
     private bool clientOpen = false;
 
     private Vector3 wrtPlayerPos;

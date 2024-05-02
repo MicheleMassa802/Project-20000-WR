@@ -11,9 +11,10 @@ public class Pitcher : MonoBehaviour
     public Transform pitcherHand;
     public GameObject strikeZone;
     public bool easyMode;
-    public int timeOut = 8;
+    public int timeOut = 6;
     public float throwForce = 1.7f;
-    public float throwAngle = 5f;
+
+    private Options optionsScript;
 
     private float zVariability;
     private float yVariability;
@@ -34,8 +35,13 @@ public class Pitcher : MonoBehaviour
         handPosition = pitcherHand.position;
 
         dot = strikeZone.transform.position;
-        SetupPitchingSettings();
-        InvokeRepeating("Pitch", 3.0f, 10f);
+
+        // setup args again upon starting game
+        optionsScript = GameObject.Find("BattingPopup").GetComponent<Options>();
+        optionsScript.OnGameStart += SetupPitchingSettings;  
+
+        SetupPitchingSettings(null, null);
+        InvokeRepeating("Pitch", 3.0f, timeOut);
     }
 
 
@@ -87,7 +93,7 @@ public class Pitcher : MonoBehaviour
 
     }
 
-    private void SetupPitchingSettings()
+    private void SetupPitchingSettings(object sender, EventArgs e)
     {
 
         // wildness settings

@@ -31,12 +31,16 @@ public class MovePlayer : MonoBehaviour
         playerInputActions = new PlayerInputActions();
         playerInputActions.Player.Enable();
         playerInputActions.Player.BattingLock.performed += ToggleBattingLock;
+        Debug.Log(Screen.width + " " + Screen.height);
+        Mouse.current.WarpCursorPosition(new Vector2(Screen.width, Screen.height));
+
 
     }
 
 
     void Update()
     {
+
         Vector2 playerInput = playerInputActions.Player.Movement.ReadValue<Vector2>();
         Move(playerInput);
     }

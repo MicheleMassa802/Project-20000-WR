@@ -51,6 +51,7 @@ def ColorFilteringDataSender(videoSourceNum: int, righty: bool):
 
     # start the video analysis
     cap = cv2.VideoCapture(videoSourceNum)
+    
 
     # manual thresholds based on testing
     lower_red, upper_red = GetLimits(DI.RED)

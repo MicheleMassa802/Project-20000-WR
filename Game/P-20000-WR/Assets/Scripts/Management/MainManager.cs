@@ -32,7 +32,7 @@ public class MainManager : MonoBehaviour
     }
 
     // the function handling which input type to take when stepping into the plate
-    public void StartGame(object sender, EventArgs e)
+    private void StartGame(object sender, EventArgs e)
     {
         // get the argument
         int inputType = PlayerPrefs.GetInt("inputType");
@@ -50,7 +50,7 @@ public class MainManager : MonoBehaviour
 
     }
 
-    public void StopGame(object sender, EventArgs e)
+    private void StopGame(object sender, EventArgs e)
     {
         // get the argument
         int inputType = PlayerPrefs.GetInt("inputType");
