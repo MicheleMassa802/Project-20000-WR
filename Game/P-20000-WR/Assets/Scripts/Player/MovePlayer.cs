@@ -31,16 +31,11 @@ public class MovePlayer : MonoBehaviour
         playerInputActions = new PlayerInputActions();
         playerInputActions.Player.Enable();
         playerInputActions.Player.BattingLock.performed += ToggleBattingLock;
-        Debug.Log(Screen.width + " " + Screen.height);
-        Mouse.current.WarpCursorPosition(new Vector2(Screen.width, Screen.height));
-
-
     }
 
 
     void Update()
     {
-
         Vector2 playerInput = playerInputActions.Player.Movement.ReadValue<Vector2>();
         Move(playerInput);
     }
@@ -72,7 +67,6 @@ public class MovePlayer : MonoBehaviour
             // unlock
             isLocked = false;
             OnPlayerUnlock?.Invoke(this, EventArgs.Empty);
-            Debug.Log("PlayerUnlock");
             playerRB.isKinematic = false;  // resume movement
         }
         else if (isInLockedZone && !isLocked)
@@ -81,7 +75,6 @@ public class MovePlayer : MonoBehaviour
             isLocked = true;
             OnPlayerLock?.Invoke(this, EventArgs.Empty);
             // set player position to middle of the respective plate
-            Debug.Log("PlayerLock");
             playerRB.isKinematic = true;  // stop movement
             transform.position = lockedPos;
         }
@@ -110,6 +103,7 @@ public class MovePlayer : MonoBehaviour
             lockedPos = other.gameObject.transform.position;
             lockedPos.y += transform.position.y;
             PlayerPrefs.SetInt("isRighty", 0);
+            // set bat position to lefty start
         } 
         else if (other.CompareTag("BatBoxR") && !isInLockedZone)
         {
@@ -117,6 +111,7 @@ public class MovePlayer : MonoBehaviour
             lockedPos = other.gameObject.transform.position;
             lockedPos.y += transform.position.y;
             PlayerPrefs.SetInt("isRighty", 1);
+            // set bat position to righty start
         }
     }
 

@@ -9,6 +9,10 @@ public class BatSwinger : MonoBehaviour
     private Options optionsScript;  // fires off start event
     private MovePlayer movePlayerScript;  // fires off unlocking event
 
+    private bool isRighty = true;
+
+    [SerializeField] private bool checkForSwing = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -18,20 +22,49 @@ public class BatSwinger : MonoBehaviour
         movePlayerScript = GameObject.Find("Player").GetComponent<MovePlayer>();
 
         // event handling
-        optionsScript.OnGameStart += PlayAnim;
-        movePlayerScript.OnPlayerUnlock += StopAnim;
+        optionsScript.OnGameStart += AtBatStart;
+        movePlayerScript.OnPlayerUnlock += AtBatEnd;
     }
 
-    // set the bool for swinging side correctly and activate swinging
-    private void PlayAnim(object sender, EventArgs e) 
+
+    private void Update()
     {
+        if (checkForSwing)
+        {
+            if (Input.GetMouseButtonDown(0))  // TO BE ||'ed with BatTM swing condition
+            {
+                // generate a swing of the bat via an animation
+                string swingAnim = isRighty ? "BatRighty" : "BatLefty";
+                string idleAnim = isRighty ? "PrepRighty" : "PrepLefty";
+                batAnimController.Play(swingAnim);
+                // immediately play idle to return to idle state after swing
+                // (as the transitions have exit time)
+                batAnimController.Play(idleAnim);
+
+            }
+        }
+    }
+
+
+    private void AtBatStart(object sender, EventArgs e)
+    {
+        // determine batting side
         int rightyInt = PlayerPrefs.GetInt("isRighty");  // updated after player steps in
-        batAnimController.SetBool("swinging", true);
-        batAnimController.SetBool("righty", rightyInt == 1);   
+        isRighty = rightyInt == 1;
+
+        // go into prep <correct side> animation
+        string idleAnim = isRighty ? "PrepRighty" : "PrepLefty";
+        batAnimController.Play(idleAnim);
+
+        checkForSwing = true;  // start checking for swings
+
     }
 
-    private void StopAnim(object sender, EventArgs e)
+    private void AtBatEnd(object sender, EventArgs e)
     {
-        batAnimController.SetBool("swinging", false);
+        // stop checking for swing
+        checkForSwing = false;
+        // go back to idle animation
+        batAnimController.Play("Idle");
     }
 }

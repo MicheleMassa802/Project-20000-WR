@@ -1486,7 +1486,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5918946985254214213, guid: 77c0d3d05c2538d4bb5f5d4105f5b5a3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.5000001
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5918946985254214213, guid: 77c0d3d05c2538d4bb5f5d4105f5b5a3, type: 3}
       propertyPath: m_LocalRotation.w
@@ -4481,6 +4481,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 743332fe886352245b0c76008c7a165c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  checkForSwing: 0
 --- !u!1 &861708001
 GameObject:
   m_ObjectHideFlags: 0
