@@ -20,9 +20,16 @@ public class DetectBatClient : MonoBehaviour
     private bool readData = false;
     private bool clientOpen = false;
 
-    private Vector3 wrtPlayerPos;
-    public GameObject batRange;
+    private Vector3 batShift;
+    private Vector3 defaultPosition;
 
+    public GameObject batRange;
+    public static bool batTMSwung = false;
+
+    private void Start()
+    {
+        defaultPosition = transform.position;
+    }
 
 
     IEnumerator ReceiveData()
@@ -46,10 +53,18 @@ public class DetectBatClient : MonoBehaviour
         if (readData)
         {
             Debug.Log(batData);
-            List<float> parsedData = BatPositionUtil.ParseDic(batData);  // returns a 4 len array
-            transform.position = BatPositionUtil.CalculateBatPos(parsedData);
-            transform.rotation = Quaternion.Euler(parsedData[3], transform.rotation.eulerAngles.y,
-                transform.rotation.eulerAngles.z);
+            List<float> parsedData = BatPositionUtil.ParseReceivedData(batData);  // returns a 3 len array
+            batShift = BatPositionUtil.CalculateBatShift(parsedData);
+
+            // shift the transform's position
+            transform.position = new Vector3(
+                defaultPosition.x,
+                defaultPosition.y - batShift.y,
+                defaultPosition.z - batShift.z
+            );
+
+            // check for swing
+            batTMSwung = parsedData[2] == 1;
         } 
 
     }
@@ -59,8 +74,6 @@ public class DetectBatClient : MonoBehaviour
     {
         // move bat to center of bat range and start reading in input data
         readData = true;
-        wrtPlayerPos = transform.position;
-        transform.position = batRange.transform.position;
 
         // only called with BatTM input
         ConnectToServer();
@@ -73,7 +86,6 @@ public class DetectBatClient : MonoBehaviour
 
         // move bat back to player's control and stop receiving data
         readData = false;
-        transform.position = wrtPlayerPos;
 
         // stop reading in input data
         StopCoroutine(ReceiveData());

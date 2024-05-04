@@ -5,13 +5,16 @@ import cv2
 from Utils import GetLimits
 import DetectInput as DI
 
-# CONSTANTS
+# COMM CONSTANTS
 HOST = "127.0.0.1"
 PORT = 12345
 
+# PROC CONSTANTS
+SZ_CENTER = (320, 301)
 
 ###############################################################################
-# File for sending bat data through a local server to the Unity Game
+# File for sending bat data through a local server to the Unity Game 
+# (after slight processing)
 ###############################################################################
 
 
@@ -31,6 +34,9 @@ def ColorFilteringDataSender(videoSourceNum: int, righty: bool):
     bat_pos = None
     bat_speed = None
     bat_dir = None
+    # data to send
+    scaled_dist = (0, 0)  # scaled distance (by /5) from the center of the strike zone, default is 0 dist
+    swing = 0  # whether the player swung or not in this frame, default is 0
 
     # Create the socket and bind it
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # ipv4, tcp
@@ -51,7 +57,6 @@ def ColorFilteringDataSender(videoSourceNum: int, righty: bool):
 
     # start the video analysis
     cap = cv2.VideoCapture(videoSourceNum)
-    
 
     # manual thresholds based on testing
     lower_red, upper_red = GetLimits(DI.RED)
@@ -59,6 +64,7 @@ def ColorFilteringDataSender(videoSourceNum: int, righty: bool):
     try:
         while True:
             bat_data = {'pos': bat_pos, 'spd': bat_speed, 'dir': bat_dir}
+            send_data = {'scaled_dist': scaled_dist, 'swing': swing}
             frame, mask, bat_data = DI.WebCamColorFilteringIteration(
                 cap, DI.BatDataV2, bat_data, lower_red, upper_red, righty)
 
@@ -70,10 +76,15 @@ def ColorFilteringDataSender(videoSourceNum: int, righty: bool):
             if not (bat_pos is None):
                 bat_data['pos'] = (int(bat_pos[0]), int(bat_pos[1]))
 
-            client_s.send(json.dumps(bat_data).encode())
+            # parse the data and send it
+            scaled_dist, swing = ParseBatData(bat_data)
+            send_data['scaled_dist'] = scaled_dist
+            send_data['swing'] = swing
+
+            client_s.send(json.dumps(send_data).encode())
 
             cv2.imshow("OG", frame)
-            cv2.imshow("Mask", mask)
+            # cv2.imshow("Mask", mask)
 
             # exit loop on q key-press
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -89,6 +100,33 @@ def ColorFilteringDataSender(videoSourceNum: int, righty: bool):
 
         # close the connection
         s.close()
+
+
+"""
+Parses bat data to return the scaled distance from the center of the strike
+zone and determines whether there was a swing or not.
+
+Args:
+- bat_data: a dictionary of form {'pos': (x,y), 'spd': s, 'dir': d}
+
+Return: (in the form of a tuple)
+- Scaled distance from strikezone center in the form of a tuple (x_dist, y_dist)
+- 0 for no swing, 1 for swing
+"""
+def ParseBatData(bat_data):
+    pos = bat_data['pos']
+    speed = bat_data['spd']
+
+    # for the first iteration
+    if pos is None or speed is None:
+        return ((0,0), 0)
+
+    scaled_dist_x = int((pos[0] - SZ_CENTER[0]) / 5)
+    scaled_dist_y = int((pos[1] - SZ_CENTER[1]) / 5)
+
+    swing = 1 if speed > 80 else 0
+
+    return ((scaled_dist_x, scaled_dist_y), swing)
 
 
 ###############################################################################

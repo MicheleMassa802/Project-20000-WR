@@ -24,7 +24,7 @@ public class MainManager : MonoBehaviour
     {
         // event handling
         movePlayerScript = GameObject.Find("Player").GetComponent<MovePlayer>();
-        detectBatClientScript = GameObject.Find("Bat").GetComponent<DetectBatClient>();
+        detectBatClientScript = GameObject.Find("Orientation").GetComponent<DetectBatClient>();
         optionsScript = GameObject.Find("BattingPopup").GetComponent<Options>();
 
         optionsScript.OnGameStart += StartGame;
@@ -37,15 +37,15 @@ public class MainManager : MonoBehaviour
         // get the argument
         int inputType = PlayerPrefs.GetInt("inputType");
 
-        // BatTM specific
-        if (inputType == 1) { 
+        
+        if (inputType == 1)
+        { // BatTM specific
             UnityEngine.Debug.Log("Starting scripts");
             
             // start up host, then client and establish a connection
             StartBatInputHost();
             detectBatClientScript.ConnectClient();
-        }
-
+        } 
         // otherwise, we handle input via M&K
 
     }
