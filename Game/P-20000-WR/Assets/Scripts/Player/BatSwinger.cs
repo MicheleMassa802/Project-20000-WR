@@ -31,7 +31,7 @@ public class BatSwinger : MonoBehaviour
     {
         if (checkForSwing)
         {
-            if (Input.GetMouseButtonDown(0) || DetectBatClient.batTMSwung)
+            if (DetectMouseInput.batMKSwung || DetectBatClient.batTMSwung)
             {
                 // generate a swing of the bat via an animation
                 string swingAnim = isRighty ? "BatRighty" : "BatLefty";
@@ -44,8 +44,6 @@ public class BatSwinger : MonoBehaviour
             }
         }
     }
-
-
 
 
     private void AtBatStart(object sender, EventArgs e)

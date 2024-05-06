@@ -8,14 +8,29 @@ using UnityEngine;
 public class BatPositionUtil : MonoBehaviour
 {
     // whole lotta sketchy code going on over here
-    private static readonly float zRangePx = 128;  // scaled down
-    private static readonly float yRangePx = 96;  // scaled down
+    private static readonly float zRangePx = 128;   // scaled down
+    private static readonly float yRangePx = 96;    // scaled down
+    private static readonly float ySZCenter = 60;   // scaled down
     private static readonly float zRange = 3.85f;
     private static readonly float yRange = 3.1f;
-    private static Vector3 rangeCenter = new Vector3(-0.2f, 1.85f, 0f);
-    private static Vector3 topLeftRange =
-        new Vector3(-0.2f, rangeCenter.y + (yRange / 2), rangeCenter.z + (zRange / 2));
+    private static readonly float canvasX = Screen.width;
+    private static readonly float canvasY = Screen.height;
 
+    public static Vector2 GetCanvasSZCenter()
+    {
+        // return the canvas SZ center based on its scaled down measurements
+        int canvasSZx = (int)(canvasX / 2);
+        int canvasSZy = (int)(canvasY * ySZCenter / yRangePx);
+
+        return new Vector2(canvasSZx, canvasSZy);
+    }
+
+    // helper in charge of outputing the scaled distance from the center of the strikezone
+    // based on the input mouse position
+    public static Vector2 ParseMouseInput(Vector2 mousePos, Vector2 sZcenter, Vector2 scale)
+    {
+        return (mousePos - sZcenter) / scale;
+    }
 
     // helper for parsing the received string which has the form of a python dictionary
     // this is the updated version of the previously used ParseDic.
@@ -60,7 +75,6 @@ public class BatPositionUtil : MonoBehaviour
                 moddedS = s.Trim();
             }
 
-            Debug.Log("Modded " + moddedS);
             result.Add(float.Parse(moddedS));
         }
         return result;
@@ -68,15 +82,15 @@ public class BatPositionUtil : MonoBehaviour
 
     // helper to calculate how the bat (orientation) moves in the bat range zone based
     // on the positions provided in the parsedData float list (of 3 elements)
-    public static Vector3 CalculateBatShift(List<float> parsedData)
+    public static Vector3 CalculateBatShift(Vector2 parsedData)
     {
-        // parsedData[0] and [1] contain the scaled pixel offsets from the center
-        // of the canvas batting region panel
+        // parsedData.x and .y (the first two elements) contain the scaled pixel offsets
+        // from the center of the canvas batting region panel
 
         // scale them to displacements in Unity units and add those displacements to the
         // bat's positions
-        float inGameZ = parsedData[0] * zRange / zRangePx;
-        float inGameY = parsedData[1] * yRange / yRangePx;
+        float inGameZ = parsedData.x * zRange / zRangePx;  
+        float inGameY = parsedData.y * yRange / yRangePx;
 
         // add these distances to the top left coord of the range and return that
         return new Vector3(0, inGameY, inGameZ);

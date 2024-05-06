@@ -17,19 +17,24 @@ public class MainManager : MonoBehaviour
 
     private MovePlayer movePlayerScript;  // fires off locking/unlocking event
     private DetectBatClient detectBatClientScript;
+    private DetectMouseInput detectMouseInputScript;
     private Options optionsScript;
 
 
     private void Start()
     {
         // event handling
+        GameObject batOrientation = GameObject.Find("Orientation");
+
+        detectBatClientScript = batOrientation.GetComponent<DetectBatClient>();
+        detectMouseInputScript = batOrientation.GetComponent <DetectMouseInput>();
         movePlayerScript = GameObject.Find("Player").GetComponent<MovePlayer>();
-        detectBatClientScript = GameObject.Find("Orientation").GetComponent<DetectBatClient>();
         optionsScript = GameObject.Find("BattingPopup").GetComponent<Options>();
 
         optionsScript.OnGameStart += StartGame;
         movePlayerScript.OnPlayerUnlock += StopGame;
     }
+
 
     // the function handling which input type to take when stepping into the plate
     private void StartGame(object sender, EventArgs e)
@@ -37,17 +42,20 @@ public class MainManager : MonoBehaviour
         // get the argument
         int inputType = PlayerPrefs.GetInt("inputType");
 
-        
-        if (inputType == 1)
-        { // BatTM specific
-            UnityEngine.Debug.Log("Starting scripts");
+        if (inputType == 1)  // BatTM specific
+        { 
+            UnityEngine.Debug.Log("Starting BatTM scripts");
             
             // start up host, then client and establish a connection
             StartBatInputHost();
             detectBatClientScript.ConnectClient();
-        } 
-        // otherwise, we handle input via M&K
-
+        }
+        else  // otherwise, we handle input via M&K
+        {
+            UnityEngine.Debug.Log("Starting M&K scripts");
+            detectMouseInputScript.ConnectClient();
+        }
+        
     }
 
     private void StopGame(object sender, EventArgs e)
@@ -55,12 +63,16 @@ public class MainManager : MonoBehaviour
         // get the argument
         int inputType = PlayerPrefs.GetInt("inputType");
 
-        // BatTM specific
-        if (inputType == 1) {
+        if (inputType == 1)  // BatTM specific
+        {
             UnityEngine.Debug.Log("Stopping scripts");
             StopBatInputHost();
             detectBatClientScript.DcClient();
-
+        }
+        else  // otherwise, we handle input via M&K
+        {
+            UnityEngine.Debug.Log("Stopping M&K scripts");
+            detectMouseInputScript.DcClient();
         }
 
     }

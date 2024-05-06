@@ -8,8 +8,9 @@ using UnityEngine;
 
 public class DetectBatClient : MonoBehaviour
 {
-    // In charge of detecting the movement of the cursor (either directly or via the
-    // BatTM IRL detection) and calculating the movement of the in-game bat
+    // In charge of detecting the movement of the cursor (via the
+    // BatTM IRL detection) and calculating the movement of the
+    // in-game bat
 
     const int PORT = 12345;
     const string HOST = "127.0.0.1";
@@ -20,6 +21,7 @@ public class DetectBatClient : MonoBehaviour
     private bool readData = false;
     private bool clientOpen = false;
 
+    private Vector2 scaledDistance;
     private Vector3 batShift;
     private Vector3 defaultPosition;
 
@@ -54,7 +56,9 @@ public class DetectBatClient : MonoBehaviour
         {
             Debug.Log(batData);
             List<float> parsedData = BatPositionUtil.ParseReceivedData(batData);  // returns a 3 len array
-            batShift = BatPositionUtil.CalculateBatShift(parsedData);
+            // get the position offsets into Vector2 form
+            scaledDistance = new Vector2(parsedData[0], parsedData[1]);
+            batShift = BatPositionUtil.CalculateBatShift(scaledDistance);
 
             // shift the transform's position
             transform.position = new Vector3(
