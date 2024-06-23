@@ -17,9 +17,8 @@ public class DetectMouseInput : MonoBehaviour
     // purpose of similarity
     // Code debt: make an interface for this ???
 
-    private static readonly float screenHeight = Screen.height;
-    private static readonly float xRangePx = 128;   // scaled down
-    private static readonly float yRangePx = 96;    // scaled down
+    private const float sweetSpotZRighty = -1.85f;
+    private const float sweetSpotZLefty = 1.85f;
 
     private bool readData = false;
 
@@ -29,19 +28,21 @@ public class DetectMouseInput : MonoBehaviour
 
     private Vector2 scaledDistance;
     private Vector2 canvasSZCenter;
-    private Vector2 canvasToZoneScaling;
 
     public GameObject batRange;
     public static bool batMKSwung = false;
+private Vector3 sweetSpotOffset = new(0f, -0.25f, -1.85f); // from the Orientation gameObject which holds this script
+
+    private BatSwinger batSwingerScript;
+    private bool isRighty;
 
     private void Start()
     {
-        defaultPosition = transform.position;
+        defaultPosition = BatPositionUtil.WorldSZCenter - sweetSpotOffset;
         canvasSZCenter = BatPositionUtil.GetCanvasSZCenter();
-        canvasToZoneScaling = new Vector2(
-            (int)(Screen.width / xRangePx),
-            (int)(Screen.height / yRangePx)
-        );
+        // watch out for side switching when computing offsets
+        batSwingerScript = GameObject.Find("Bat").GetComponent<BatSwinger>();
+        batSwingerScript.OnRegisterSideSwitch += (obj, eventArgs) => { isRighty = eventArgs.IsRighty; };
     }
 
     private void Update()
@@ -54,38 +55,38 @@ public class DetectMouseInput : MonoBehaviour
 
     private void MoveBat()
     {
+
         // in charge of moving bat based on the mouse position
 
         mousePos = Input.mousePosition;
         float mouseX = mousePos.x;
-        float mouseY = screenHeight - mousePos.y;
+        float mouseY = BatPositionUtil.canvasY - mousePos.y;
 
         // get the position offsets into Vector2 form
         scaledDistance = BatPositionUtil.ParseMouseInput(
             new Vector2(mouseX, mouseY),
-            canvasSZCenter,
-            canvasToZoneScaling
+            canvasSZCenter
         );
         Debug.Log("Scaled: " + scaledDistance);
         batShift = BatPositionUtil.CalculateBatShift(scaledDistance);
+        Debug.Log("Shift: " + batShift);
 
-        // shift the transform's position
+        // account for the animation shift when showing pointer
+        sweetSpotOffset.z = isRighty ? sweetSpotZRighty : sweetSpotZLefty;
+        defaultPosition = BatPositionUtil.WorldSZCenter - sweetSpotOffset;
+
+        // shift the transform's position 
         transform.position = new Vector3(
             defaultPosition.x,
             defaultPosition.y - batShift.y,
             defaultPosition.z - batShift.z
         );
+        Debug.Log("World Pos: " + transform.position);
 
         // check for swing
         batMKSwung = Input.GetMouseButtonDown(0);
-        
-
     }
 
-    private void RenderCursor()
-    {
-
-    }
 
     public void ConnectClient() { readData = true; }
     public void DcClient() { readData = false; }

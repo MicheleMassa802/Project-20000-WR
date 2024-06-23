@@ -5,6 +5,12 @@ using UnityEngine;
 
 public class BatSwinger : MonoBehaviour
 {
+    // event arg
+    public class RegisterSideSwitchEventArgs : EventArgs
+    {
+        public bool IsRighty { get; set; }
+    }
+
     private Animator batAnimController;
     private Options optionsScript;  // fires off start event
     private MovePlayer movePlayerScript;  // fires off unlocking event
@@ -12,6 +18,8 @@ public class BatSwinger : MonoBehaviour
     private bool isRighty = true;
 
     [SerializeField] private bool checkForSwing = false;
+
+    public event EventHandler<RegisterSideSwitchEventArgs> OnRegisterSideSwitch;
 
     // Start is called before the first frame update
     void Start()
@@ -51,13 +59,15 @@ public class BatSwinger : MonoBehaviour
         // determine batting side
         int rightyInt = PlayerPrefs.GetInt("isRighty");  // updated after player steps in
         isRighty = rightyInt == 1;
+        // shoot of side switch event
+        OnRegisterSideSwitch?.Invoke(this, new RegisterSideSwitchEventArgs { IsRighty=isRighty });
 
         // go into prep <correct side> animation
         string idleAnim = isRighty ? "PrepRighty" : "PrepLefty";
         batAnimController.Play(idleAnim);
 
         checkForSwing = true;  // start checking for swings
-
+            
     }
 
     private void AtBatEnd(object sender, EventArgs e)
