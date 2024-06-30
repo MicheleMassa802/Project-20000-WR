@@ -20,7 +20,7 @@ public class DetectMouseInput : MonoBehaviour
     private const float sweetSpotZRighty = -1.85f;
     private const float sweetSpotZLefty = 1.85f;
 
-    private bool readData = false;
+    public bool readData = false;
 
     private Vector3 mousePos;
     private Vector3 batShift;
@@ -30,8 +30,8 @@ public class DetectMouseInput : MonoBehaviour
     private Vector2 canvasSZCenter;
 
     public GameObject batRange;
-    public static bool batMKSwung = false;
-private Vector3 sweetSpotOffset = new(0f, -0.25f, -1.85f); // from the Orientation gameObject which holds this script
+    public bool batMKSwung = false;
+    private Vector3 sweetSpotOffset = new(0f, -0.25f, -1.85f); // from the Orientation gameObject which holds this script
 
     private BatSwinger batSwingerScript;
     private bool isRighty;

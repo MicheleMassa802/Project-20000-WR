@@ -14,6 +14,8 @@ public class BatSwinger : MonoBehaviour
     private Animator batAnimController;
     private Options optionsScript;  // fires off start event
     private MovePlayer movePlayerScript;  // fires off unlocking event
+    private DetectBatClient detectBatClient;
+    private DetectMouseInput detectMouseInput;
 
     private bool isRighty = true;
 
@@ -28,6 +30,8 @@ public class BatSwinger : MonoBehaviour
 
         optionsScript = GameObject.Find("BattingPopup").GetComponent<Options>();
         movePlayerScript = GameObject.Find("Player").GetComponent<MovePlayer>();
+        detectMouseInput = transform.parent.GetComponent<DetectMouseInput>();
+        detectBatClient = transform.parent.GetComponent<DetectBatClient>();
 
         // event handling
         optionsScript.OnGameStart += AtBatStart;
@@ -39,16 +43,17 @@ public class BatSwinger : MonoBehaviour
     {
         if (checkForSwing)
         {
-            if (DetectMouseInput.batMKSwung || DetectBatClient.batTMSwung)
+            if (detectMouseInput.batMKSwung || detectBatClient.batTMSwung)
             {
                 // generate a swing of the bat via an animation
                 string swingAnim = isRighty ? "BatRighty" : "BatLefty";
                 string idleAnim = isRighty ? "PrepRighty" : "PrepLefty";
+                
+                // play animations
                 batAnimController.Play(swingAnim);
                 // immediately play idle to return to idle state after swing
                 // (as the transitions have exit time)
                 batAnimController.Play(idleAnim);
-
             }
         }
     }

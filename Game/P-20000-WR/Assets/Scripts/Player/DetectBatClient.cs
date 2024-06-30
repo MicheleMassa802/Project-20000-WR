@@ -12,21 +12,27 @@ public class DetectBatClient : MonoBehaviour
     // BatTM IRL detection) and calculating the movement of the
     // in-game bat
 
+    // Code debt: make an interface for this ??? -- lets be honest buddy, it ain't gettin done lol
+
     const int PORT = 12345;
     const string HOST = "127.0.0.1";
     const int BUFFER_SIZE = 1024;
     private TcpClient client;
     private NetworkStream stream;
     
-    private bool readData = false;
+    public bool readData = false;
     private bool clientOpen = false;
 
-    private Vector2 scaledDistance;
+    public Vector2 scaledDistance;
     private Vector3 batShift;
     private Vector3 defaultPosition;
 
     public GameObject batRange;
-    public static bool batTMSwung = false;
+    public bool batTMSwung = false;
+
+    // events for cursor tracking
+    public event EventHandler OnTrackBat;
+    public event EventHandler OnStopTrackBat;
 
     private void Start()
     {
@@ -82,6 +88,8 @@ public class DetectBatClient : MonoBehaviour
         // only called with BatTM input
         ConnectToServer();
 
+        // start tracking bat movement in-game via cursor
+        OnTrackBat?.Invoke(this, EventArgs.Empty);
     }
 
     public void DcClient()
@@ -95,6 +103,9 @@ public class DetectBatClient : MonoBehaviour
         StopCoroutine(ReceiveData());
         // DC from the server
         client.Close();
+
+        // stop tracking bat movement in-game via cursor
+        OnStopTrackBat?.Invoke(this, EventArgs.Empty);
 
     }
 

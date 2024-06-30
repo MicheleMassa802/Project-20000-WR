@@ -6,9 +6,15 @@ using UnityEngine;
 public class CursorManager : MonoBehaviour
 {
     [SerializeField] private Texture2D batCursor;
-
-    private MovePlayer movePlayerScript;  // fires off locking/unlocking event
     private Vector2 cursorHotSpot;
+    private Vector2 canvasSzCenter;
+    private bool shouldTrack = false;
+
+    public GameObject batTMCursor;
+
+    // event handlers
+    private MovePlayer movePlayerScript;  // fires off locking/unlocking event
+    private DetectBatClient detectBatClientScript; // fires off bat tracking events
 
     // Start is called before the first frame update
     void Start()
@@ -18,11 +24,18 @@ public class CursorManager : MonoBehaviour
             batCursor.height / 2
         ); // the middle
 
+        canvasSzCenter = BatPositionUtil.GetCanvasSZCenter();
+        canvasSzCenter.y = BatPositionUtil.canvasY - canvasSzCenter.y;  // flip off the y
+
         // event handling
         movePlayerScript = GameObject.Find("Player").GetComponent<MovePlayer>();
+        detectBatClientScript = GameObject.Find("Orientation").GetComponent<DetectBatClient>();
+        
         movePlayerScript.OnPlayerLock += DrawBat;
         movePlayerScript.OnPlayerUnlock += EraseBat;
 
+        detectBatClientScript.OnTrackBat += StartTrackingBat;
+        detectBatClientScript.OnStopTrackBat += StopTrackingBat;
     }
 
 
@@ -33,6 +46,42 @@ public class CursorManager : MonoBehaviour
 
     private void EraseBat(object sender, EventArgs e)
     {
+        RemoveCursor();
+    }
+
+    private void RemoveCursor()
+    {
         Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
+    }
+
+    private void StartTrackingBat(object sender, EventArgs e)
+    {
+        RemoveCursor();
+        shouldTrack = true;
+        StartCoroutine(TrackBat());
+        batTMCursor.SetActive(true);
+    }
+
+    private void StopTrackingBat(object sender, EventArgs e)
+    {
+        shouldTrack = false;
+        batTMCursor.SetActive(false);
+    }
+
+    IEnumerator TrackBat()
+    {
+        while (shouldTrack)
+        {
+            // render the cursor to the center of the strikezone + the offset recorded by the DetectBatClient
+            batTMCursor.transform.position = canvasSzCenter;
+
+            batTMCursor.transform.position += new Vector3(
+                detectBatClientScript.scaledDistance.x,
+                -detectBatClientScript.scaledDistance.y,
+                0
+            );
+
+            yield return null;
+        }
     }
 }
