@@ -13,8 +13,7 @@ GameObject:
   - component: {fileID: 2497008111895818598}
   - component: {fileID: 6974669145680738753}
   - component: {fileID: 810350432183390783}
-  - component: {fileID: 7866454890537287176}
-  - component: {fileID: 8238832213828337092}
+  - component: {fileID: -8654348492135705462}
   - component: {fileID: 5338860005586237477}
   m_Layer: 0
   m_Name: EZBall
@@ -136,7 +135,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &7866454890537287176
+--- !u!114 &-8654348492135705462
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -145,21 +144,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7138900979341638384}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a84a7e2dc7285a54ca17295ecc610e48, type: 3}
+  m_Script: {fileID: 11500000, guid: b7ae03063a18686488ef754c3e446b81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8238832213828337092
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7138900979341638384}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a2f3c202078af24587f4e81a7176f2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  timeToKill: 15
+  maxForceBoost: 10
+  minForceBoost: 2
 --- !u!114 &5338860005586237477
 MonoBehaviour:
   m_ObjectHideFlags: 0

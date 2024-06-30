@@ -2,27 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum BallEventType
+public enum BallOutcome
 {
     Strike,
     Hit,
+    Ball,
     Homer,
     Foul,
-    HBP
+    HBP,
+    Undetectable,
+    Unset
 }
 
 public class DetectBallStat : MonoBehaviour
 {
 
-    readonly Dictionary<string, BallEventType> tags = new()
+    public readonly static Dictionary<string, BallOutcome> tags = new()
     {
-        {"FoulRight", BallEventType.Foul},
-        {"FoulLeft", BallEventType.Foul},
-        {"HRCenter", BallEventType.Homer},
-        {"HRRight", BallEventType.Homer},
-        {"HRLeft", BallEventType.Homer},
-        {"StrikeZone", BallEventType.Strike},
-        {"Player", BallEventType.HBP},
+        {"FoulRight", BallOutcome.Foul},
+        {"FoulLeft", BallOutcome.Foul},
+        {"HRCenter", BallOutcome.Homer},
+        {"HRRight", BallOutcome.Homer},
+        {"HRLeft", BallOutcome.Homer},
+        {"StrikeZone", BallOutcome.Strike},
+        {"Player", BallOutcome.HBP},
     };
 
     
@@ -38,17 +41,19 @@ public class DetectBallStat : MonoBehaviour
         HandleContact(collision.collider, true);
     }
 
-    private void HandleContact(Collider other, bool isCollision)
+    private static void HandleContact(Collider other, bool isCollision)
     {
-        BallEventType ballEvent;
+        BallOutcome ballEvent;
         return;  // TO BE REMOVED
+
+        // CHANGE TO SWITCH YOU FUCKING DONKEY
         if (tags.TryGetValue(other.tag, out ballEvent))
         {
-            if (ballEvent == BallEventType.Foul)
+            if (ballEvent == BallOutcome.Foul)
             {
                 Debug.Log("Foul Ball !");
             }
-            else if (ballEvent == BallEventType.HBP)
+            else if (ballEvent == BallOutcome.HBP)
             {
                 Debug.Log("Hit By Pitch !");
             }
@@ -56,7 +61,7 @@ public class DetectBallStat : MonoBehaviour
             {
                 // collision and no foul/HBP and within the tags => off the wall
                 Debug.Log("Hit !");
-                ballEvent = BallEventType.Hit;
+                ballEvent = BallOutcome.Hit;
             }
             else
             {
@@ -70,7 +75,7 @@ public class DetectBallStat : MonoBehaviour
         {
             // unknown behaviour
             Debug.Log("Something happened, probably a ground ball");
-            ballEvent = BallEventType.Hit;
+            ballEvent = BallOutcome.Hit;
         }
 
         // send out ball event
