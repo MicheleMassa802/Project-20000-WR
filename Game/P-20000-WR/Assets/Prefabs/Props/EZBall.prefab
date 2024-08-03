@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeToKill: 15
-  maxForceBoost: 10
+  maxForceBoost: 8
   minForceBoost: 2
 --- !u!114 &5338860005586237477
 MonoBehaviour:

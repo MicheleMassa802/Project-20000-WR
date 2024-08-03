@@ -10,6 +10,7 @@ public class BallLifeCycleManager : MonoBehaviour
     private const string PlayerTag = "Player";
     private const string StrikeZoneTag = "StrikeZone";
     private const string SweetSpotId = "SweetSpot";
+    private const string Ground = "Untagged";
     private const float BatWoodRadius = 0.25f;
 
 
@@ -43,7 +44,9 @@ public class BallLifeCycleManager : MonoBehaviour
     public float maxForceBoost;
     public float minForceBoost;
     public event EventHandler<BallOutcomeData> OnRegisterBallResults;
-    
+    public event EventHandler OnHitBall;
+    public event EventHandler OnGroundBall;
+
 
 
     private void Start()
@@ -91,7 +94,9 @@ public class BallLifeCycleManager : MonoBehaviour
             // first contact collision can be either a batted ball, HBP, or wild pitch
             if (collider.CompareTag(BatTag))
             {
+                // power up ball and set its gravity scale back to 1
                 PowerUpBattedBall(collision);
+                OnHitBall?.Invoke(this, EventArgs.Empty);
                 // fall through to record the contact
             }
             else if (collider.CompareTag(PlayerTag))
@@ -104,6 +109,13 @@ public class BallLifeCycleManager : MonoBehaviour
                 RecordOutcome(BallOutcome.Ball);
                 return;
             }
+        }
+
+        // no matter if its first collision, if we hit an untagged object,
+        // restore ground gravity for the ball
+        if (collider.CompareTag(Ground))
+        {
+            OnGroundBall?.Invoke(this, EventArgs.Empty);
         }
 
         // make a new collision out of the collider that you interacted with
