@@ -4469,7 +4469,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   readData: 0
-  scaledDistance: {x: 0, y: 0}
+  framePixelPosition: {x: 0, y: 0}
+  gamePixelPosition: {x: 0, y: 0}
   batRange: {fileID: 333241151}
   batTMSwung: 0
 --- !u!114 &814473094
