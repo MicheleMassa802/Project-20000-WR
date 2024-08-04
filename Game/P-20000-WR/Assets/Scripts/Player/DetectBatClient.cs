@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class DetectBatClient : MonoBehaviour
 {
@@ -13,22 +14,35 @@ public class DetectBatClient : MonoBehaviour
     // in-game bat
 
     // Code debt: make an interface for this ??? -- lets be honest buddy, it ain't gettin done lol
+    // While at it you could make the script fucking readable YOU BUM
 
     const int PORT = 12345;
     const string HOST = "127.0.0.1";
     const int BUFFER_SIZE = 1024;
     private TcpClient client;
     private NetworkStream stream;
-    
+
+    private float sweetSpotZRighty = BatPositionUtil.sweetSpotZRighty;
+    private float sweetSpotZLefty = BatPositionUtil.sweetSpotZLefty;
+
     public bool readData = false;
     private bool clientOpen = false;
 
-    public Vector2 scaledDistance;
+    public Vector2 framePixelPosition;
+    public Vector2 gamePixelPosition;
+    
+    private Vector2 scaledDistance;
+    private Vector2 canvasSZCenter = BatPositionUtil.GetCanvasSZCenter();
+
     private Vector3 batShift;
     private Vector3 defaultPosition;
 
     public GameObject batRange;
     public bool batTMSwung = false;
+    private Vector3 sweetSpotOffset = new(0f, -0.25f, -1.85f); // from the Orientation gameObject which holds this script
+
+    private BatSwinger batSwingerScript;
+    private bool isRighty;
 
     // events for cursor tracking
     public event EventHandler OnTrackBat;
@@ -36,7 +50,10 @@ public class DetectBatClient : MonoBehaviour
 
     private void Start()
     {
-        defaultPosition = transform.position;
+        defaultPosition = BatPositionUtil.WorldSZCenter - sweetSpotOffset;
+        // watch out for side switching when computing offsets
+        batSwingerScript = GameObject.Find("Bat").GetComponent<BatSwinger>();
+        batSwingerScript.OnRegisterSideSwitch += (obj, eventArgs) => { isRighty = eventArgs.IsRighty; };
     }
 
 
@@ -62,21 +79,35 @@ public class DetectBatClient : MonoBehaviour
         {
             Debug.Log(batData);
             List<float> parsedData = BatPositionUtil.ParseReceivedData(batData);  // returns a 3 len array
+
+            // check for swing
+            batTMSwung = parsedData[2] == 1;
+
             // get the position offsets into Vector2 form
-            scaledDistance = new Vector2(parsedData[0], parsedData[1]);
+            framePixelPosition.x = parsedData[0];
+            framePixelPosition.y = parsedData[1];
+   
+            gamePixelPosition = BatPositionUtil.CalculateGamePixelPosition(framePixelPosition);
+
+            // use mouse system to position the bat accordingly
+            scaledDistance = BatPositionUtil.ParseMouseInput(
+                new Vector2(gamePixelPosition.x, gamePixelPosition.y),
+                canvasSZCenter
+            );
+
             batShift = BatPositionUtil.CalculateBatShift(scaledDistance);
 
-            // shift the transform's position
+            // account for the animation shift when showing pointer
+            sweetSpotOffset.z = isRighty ? sweetSpotZRighty : sweetSpotZLefty;
+            defaultPosition = BatPositionUtil.WorldSZCenter - sweetSpotOffset;
+
+            // shift the transform's position 
             transform.position = new Vector3(
                 defaultPosition.x,
                 defaultPosition.y - batShift.y,
                 defaultPosition.z - batShift.z
             );
-
-            // check for swing
-            batTMSwung = parsedData[2] == 1;
         } 
-
     }
 
 

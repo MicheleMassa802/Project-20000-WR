@@ -14,6 +14,8 @@ public class BatPositionUtil : MonoBehaviour
     public static readonly float ySZCenter = 60;   // scaled down
     public static readonly float zRange = 3.85f;
     public static readonly float yRange = 3.1f;
+    public static readonly float xRangeFramePx = 640;
+    public static readonly float yRangeFramePx = 480;
     public static readonly float canvasX = Screen.width;
     public static readonly float canvasY = Screen.height;
     public static readonly Vector2 canvasToZoneScaling = new(
@@ -21,6 +23,8 @@ public class BatPositionUtil : MonoBehaviour
         (int)(canvasY / yRangePx)
     );
     public static readonly Vector3 WorldSZCenter = new(0, 1.65f, 0);
+    public static float sweetSpotZRighty = -1.85f;
+    public static float sweetSpotZLefty = 1.85f;
 
     public static Vector2 GetCanvasSZCenter()
     {
@@ -100,5 +104,16 @@ public class BatPositionUtil : MonoBehaviour
 
         // add these distances to the top left coord of the range and return that
         return new Vector3(0, inGameY, inGameZ);
+    }
+
+    // helper to calculate the in-game pixel position given the in-frame pixel position
+    public static Vector3 CalculateGamePixelPosition(Vector2 parsedData)
+    {
+
+        float inGameX = parsedData.x * canvasX / xRangeFramePx;
+        float inGameY = parsedData.y * canvasY / yRangeFramePx;
+
+        // add these distances to the top left coord of the range and return that
+        return new Vector3(inGameX, inGameY, 0);
     }
 }

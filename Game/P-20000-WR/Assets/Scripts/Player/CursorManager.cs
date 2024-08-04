@@ -73,12 +73,10 @@ public class CursorManager : MonoBehaviour
         while (shouldTrack)
         {
             // render the cursor to the center of the strikezone + the offset recorded by the DetectBatClient
-            batTMCursor.transform.position = canvasSzCenter;
-
-            batTMCursor.transform.position += new Vector3(
-                detectBatClientScript.scaledDistance.x,
-                -detectBatClientScript.scaledDistance.y,
-                0
+            batTMCursor.transform.position = new Vector3(
+                detectBatClientScript.gamePixelPosition.x,
+                BatPositionUtil.canvasY - detectBatClientScript.gamePixelPosition.y,
+                0 
             );
 
             yield return null;

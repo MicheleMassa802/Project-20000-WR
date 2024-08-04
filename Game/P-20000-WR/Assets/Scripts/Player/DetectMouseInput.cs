@@ -17,8 +17,8 @@ public class DetectMouseInput : MonoBehaviour
     // purpose of similarity
     // Code debt: make an interface for this ???
 
-    private const float sweetSpotZRighty = -1.85f;
-    private const float sweetSpotZLefty = 1.85f;
+    private float sweetSpotZRighty = BatPositionUtil.sweetSpotZRighty;
+    private float sweetSpotZLefty = BatPositionUtil.sweetSpotZLefty;
 
     public bool readData = false;
 
@@ -27,7 +27,7 @@ public class DetectMouseInput : MonoBehaviour
     private Vector3 defaultPosition;
 
     private Vector2 scaledDistance;
-    private Vector2 canvasSZCenter;
+    private Vector2 canvasSZCenter = BatPositionUtil.GetCanvasSZCenter();
 
     public GameObject batRange;
     public bool batMKSwung = false;
@@ -39,7 +39,6 @@ public class DetectMouseInput : MonoBehaviour
     private void Start()
     {
         defaultPosition = BatPositionUtil.WorldSZCenter - sweetSpotOffset;
-        canvasSZCenter = BatPositionUtil.GetCanvasSZCenter();
         // watch out for side switching when computing offsets
         batSwingerScript = GameObject.Find("Bat").GetComponent<BatSwinger>();
         batSwingerScript.OnRegisterSideSwitch += (obj, eventArgs) => { isRighty = eventArgs.IsRighty; };
@@ -55,21 +54,22 @@ public class DetectMouseInput : MonoBehaviour
 
     private void MoveBat()
     {
-
         // in charge of moving bat based on the mouse position
 
         mousePos = Input.mousePosition;
         float mouseX = mousePos.x;
         float mouseY = BatPositionUtil.canvasY - mousePos.y;
 
+        // check for swing
+        batMKSwung = Input.GetMouseButtonDown(0);
+
         // get the position offsets into Vector2 form
         scaledDistance = BatPositionUtil.ParseMouseInput(
             new Vector2(mouseX, mouseY),
             canvasSZCenter
         );
-        Debug.Log("Scaled: " + scaledDistance);
+
         batShift = BatPositionUtil.CalculateBatShift(scaledDistance);
-        Debug.Log("Shift: " + batShift);
 
         // account for the animation shift when showing pointer
         sweetSpotOffset.z = isRighty ? sweetSpotZRighty : sweetSpotZLefty;
@@ -81,10 +81,6 @@ public class DetectMouseInput : MonoBehaviour
             defaultPosition.y - batShift.y,
             defaultPosition.z - batShift.z
         );
-        Debug.Log("World Pos: " + transform.position);
-
-        // check for swing
-        batMKSwung = Input.GetMouseButtonDown(0);
     }
 
 

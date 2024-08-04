@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class BatSwinger : MonoBehaviour
 {
+    private const float swingAnimationLength = 2.5f;
+    private const float swingAnimationSpeed = 2.5f;
+
     // event arg
     public class RegisterSideSwitchEventArgs : EventArgs
     {
@@ -18,6 +21,9 @@ public class BatSwinger : MonoBehaviour
     private DetectMouseInput detectMouseInput;
 
     private bool isRighty = true;
+
+    public bool isSwingAnimationRunning = false;
+    private float swingAnimationTime = swingAnimationLength / swingAnimationSpeed;
 
     [SerializeField] private bool checkForSwing = false;
 
@@ -41,6 +47,11 @@ public class BatSwinger : MonoBehaviour
 
     private void Update()
     {
+        if (isSwingAnimationRunning)
+        {
+            return; 
+        }
+
         if (checkForSwing)
         {
             if (detectMouseInput.batMKSwung || detectBatClient.batTMSwung)
@@ -48,9 +59,10 @@ public class BatSwinger : MonoBehaviour
                 // generate a swing of the bat via an animation
                 string swingAnim = isRighty ? "BatRighty" : "BatLefty";
                 string idleAnim = isRighty ? "PrepRighty" : "PrepLefty";
-                
+
                 // play animations
                 batAnimController.Play(swingAnim);
+                StartCoroutine(nameof(TrackSwingAnimation));
                 // immediately play idle to return to idle state after swing
                 // (as the transitions have exit time)
                 batAnimController.Play(idleAnim);
@@ -81,5 +93,12 @@ public class BatSwinger : MonoBehaviour
         checkForSwing = false;
         // go back to idle animation
         batAnimController.Play("Idle");
+    }
+
+    IEnumerator TrackSwingAnimation()
+    {
+        isSwingAnimationRunning = true;
+        yield return new WaitForSeconds(swingAnimationTime);
+        isSwingAnimationRunning = false;
     }
 }
