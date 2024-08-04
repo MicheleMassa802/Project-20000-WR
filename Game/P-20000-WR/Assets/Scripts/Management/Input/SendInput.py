@@ -35,7 +35,7 @@ def ColorFilteringDataSender(videoSourceNum: int, righty: bool):
     bat_speed = None
     bat_dir = None
     # data to send
-    scaled_dist = (0, 0)  # scaled distance (by /5) from the center of the strike zone, default is 0 dist
+    pixel_position = (0, 0)  # the position of the bat's center in pixel form in the (640, 480) frame
     swing = 0  # whether the player swung or not in this frame, default is 0
 
     # Create the socket and bind it
@@ -64,7 +64,7 @@ def ColorFilteringDataSender(videoSourceNum: int, righty: bool):
     try:
         while True:
             bat_data = {'pos': bat_pos, 'spd': bat_speed, 'dir': bat_dir}
-            send_data = {'scaled_dist': scaled_dist, 'swing': swing}
+            send_data = {'pixel_position': pixel_position, 'swing': swing}
             frame, mask, bat_data = DI.WebCamColorFilteringIteration(
                 cap, DI.BatDataV2, bat_data, lower_red, upper_red, righty)
 
@@ -77,8 +77,8 @@ def ColorFilteringDataSender(videoSourceNum: int, righty: bool):
                 bat_data['pos'] = (int(bat_pos[0]), int(bat_pos[1]))
 
             # parse the data and send it
-            scaled_dist, swing = ParseBatData(bat_data)
-            send_data['scaled_dist'] = scaled_dist
+            _, swing = ParseBatData(bat_data)
+            send_data['pixel_position'] = bat_data['pos']
             send_data['swing'] = swing
 
             client_s.send(json.dumps(send_data).encode())

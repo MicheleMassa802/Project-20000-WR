@@ -50,13 +50,13 @@ def WebCamColorFiltering(videoSourceNum: int, func, righty: bool):
 
     capture = cv2.VideoCapture(videoSourceNum)
 
+    # manual thresholds based on testing
+    lower_red, upper_red = GetLimits(RED)
+    
     while True:
         _, frame = capture.read()
         frame = cv2.flip(frame, 1)
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-        # manual thresholds based on testing
-        lower_red, upper_red = GetLimits(RED)
 
         # everything within these ranges
         mask = cv2.inRange(hsv, lower_red, upper_red)
