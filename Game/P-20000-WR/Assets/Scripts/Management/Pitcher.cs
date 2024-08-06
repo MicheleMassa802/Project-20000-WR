@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using static BallLifeCycleManager;
 
 public class Pitcher : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class Pitcher : MonoBehaviour
     public Transform pitcherHand;
     public GameObject strikeZone;
     public bool easyMode;
-    public int timeOut = 6;
+    public int timeOut = 12;
     public float throwForce = 1.7f;
 
     private Options optionsScript;
@@ -27,6 +28,8 @@ public class Pitcher : MonoBehaviour
     private Vector3 handPosition;
 
     private Vector3 velo;
+
+    public event EventHandler<BallOutcomeData> OnDisplayBallResults;
 
     // Start is called before the first frame update
     void Start()
@@ -60,6 +63,12 @@ public class Pitcher : MonoBehaviour
 
         // spawn ball
         GameObject instantiatedBall = Instantiate(ball, pitcherHand.position, Quaternion.identity);
+
+        // Track the ball's events and echo them to the scorekeeper
+        instantiatedBall.GetComponent<BallLifeCycleManager>().OnRegisterBallResults += (obj, eventArgs) => {
+            Debug.Log("echoing");
+            OnDisplayBallResults?.Invoke(obj, eventArgs);
+        };
 
         // apply
         Rigidbody ballRb = instantiatedBall.GetComponent<Rigidbody>();

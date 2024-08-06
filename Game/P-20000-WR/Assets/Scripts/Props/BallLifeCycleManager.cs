@@ -6,19 +6,43 @@ using static BatSwinger;
 
 public class BallLifeCycleManager : MonoBehaviour
 {
-    private const string BatTag = "Bat";
-    private const string PlayerTag = "Player";
-    private const string StrikeZoneTag = "StrikeZone";
+
+#region Enums for tags and outcomes
+
+    public enum BallContactPoint
+    {
+        Bat,
+        Player,
+        StrikeZone,
+        Foul,
+        HR,
+        Field,
+        Untagged
+    }
+
+    public enum BallOutcome
+    {
+        Strike,
+        Hit,
+        Ball,
+        Homer,
+        Foul,
+        HBP,
+        Out,
+        Undetectable
+    }
+
+    #endregion
+
     private const string SweetSpotId = "SweetSpot";
-    private const string Ground = "Untagged";
     private const float BatWoodRadius = 0.25f;
 
 
     // struct to hold relevant collision data
     private struct BallEvent
     {
-        private Collider collisionPair;  // the object that interacted with the ball to create the event
-        private List<ContactPoint> contacts;  // each with their own points, normals, impulses, ...
+        public Collider collisionPair;  // the object that interacted with the ball to create the event
+        public List<ContactPoint> contacts;  // each with their own points, normals, impulses, ...
     
         public BallEvent(Collider otherObject, List<ContactPoint> allContacts)
         {
@@ -34,7 +58,7 @@ public class BallLifeCycleManager : MonoBehaviour
     }
 
     // class variables
-    [SerializeField] private float timeToKill = 15f;
+    [SerializeField] private float timeToKill = 10f;
 
     private float contactToBallDistance = 0f;
     private List<BallEvent> ballLifeSequence = new();
@@ -46,6 +70,8 @@ public class BallLifeCycleManager : MonoBehaviour
     public event EventHandler<BallOutcomeData> OnRegisterBallResults;
     public event EventHandler OnHitBall;
     public event EventHandler OnGroundBall;
+
+    private bool checkedForOutcome = false;
 
 
 
@@ -61,12 +87,13 @@ public class BallLifeCycleManager : MonoBehaviour
     // based on the different triggers/collisions with the enviroment, populate the sequence
     private void OnTriggerEnter(Collider collider)
     {
+        if (checkedForOutcome) return;
+
         // check if first contact
         if (ballLifeSequence.Count == 0)
         {
-            Debug.Log($"Triggering {collider.name}");
             // first contact trigger can be either a strike or wild pitch
-            if (collider.CompareTag(StrikeZoneTag))
+            if (collider.CompareTag(BallContactPoint.StrikeZone.ToString()))
             {
                 RecordOutcome(BallOutcome.Strike);
                 return;
@@ -85,21 +112,22 @@ public class BallLifeCycleManager : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (checkedForOutcome) return;
+
         Collider collider = collision.collider;
 
         // check if first contact
         if (ballLifeSequence.Count == 0)
         {
-            Debug.Log($"Colliding {collider.name}");
             // first contact collision can be either a batted ball, HBP, or wild pitch
-            if (collider.CompareTag(BatTag))
+            if (collider.CompareTag(BallContactPoint.Bat.ToString()))
             {
                 // power up ball and set its gravity scale back to 1
                 PowerUpBattedBall(collision);
                 OnHitBall?.Invoke(this, EventArgs.Empty);
                 // fall through to record the contact
             }
-            else if (collider.CompareTag(PlayerTag))
+            else if (collider.CompareTag(BallContactPoint.Player.ToString()))
             {
                 RecordOutcome(BallOutcome.HBP);
                 return;
@@ -113,7 +141,7 @@ public class BallLifeCycleManager : MonoBehaviour
 
         // no matter if its first collision, if we hit an untagged object,
         // restore ground gravity for the ball
-        if (collider.CompareTag(Ground))
+        if (collider.CompareTag(BallContactPoint.Untagged.ToString()))
         {
             OnGroundBall?.Invoke(this, EventArgs.Empty);
         }
@@ -127,6 +155,8 @@ public class BallLifeCycleManager : MonoBehaviour
 
     private void PowerUpBattedBall(Collision collision)
     {
+        if (checkedForOutcome) return;
+
         // at the moment of detection, power up ball's reaction to being batted
         double impact;
 
@@ -156,17 +186,49 @@ public class BallLifeCycleManager : MonoBehaviour
 
     private void AnalyzeForOutcome()
     {
-        // TODO: implement ... another day, follow guide on DetectBallStat
-        RecordOutcome(BallOutcome.Undetectable);
+        if (checkedForOutcome) return;
+
+        foreach (BallEvent lifeCycleEvent in ballLifeSequence)
+        {
+            Enum.TryParse(lifeCycleEvent.collisionPair.tag, out BallContactPoint bcp);
+
+            // balls, strikes, and HBPs already accounted for
+            switch (bcp)
+            {
+                case BallContactPoint.HR:
+                    // HR immediately returns 
+                    RecordOutcome(BallOutcome.Homer);
+                    return;
+
+                case BallContactPoint.Field:
+                    // hit immediatly returns
+                    RecordOutcome(BallOutcome.Hit);
+                    return;
+
+
+                case BallContactPoint.Foul:
+                    // got to fould without returning early from hit => foul
+                    RecordOutcome(BallOutcome.Foul); 
+                    return;
+
+                // bat, or ground => skip until we can recognize
+                default: 
+                    continue;
+            }
+        }
+
+        // if you get to the end without recording a hit/foul/homer/strike/ball/HBP
+        // the ball stayed in the infield => out
+        RecordOutcome(BallOutcome.Out);
     }
 
     private void RecordOutcome(BallOutcome registeredOutcome)
     {
-        Debug.Log($"Recording {registeredOutcome}");
-
+        Debug.Log("invoking");
         // send off outcome of this ball for record registering and UI updates
         OnRegisterBallResults?.Invoke(this, new BallOutcomeData { Outcome = registeredOutcome });
-
+        checkedForOutcome = true;
+        
         // destroy ball in 2 seconds (for dramatic effect)
         Destroy(gameObject, 2f);
     }
@@ -180,7 +242,6 @@ public class BallLifeCycleManager : MonoBehaviour
     {
         // adjust the input to account for the radius of the bat
         x -= BatWoodRadius;
-        Debug.Log($"Adjusted input {x}");
 
         // get the complement of x (as the function is flipped)
         // x = -0.3 is the limit before effect is considered too small, we clamp
@@ -191,7 +252,6 @@ public class BallLifeCycleManager : MonoBehaviour
         //  scale & return
         double result = ((maxForceBoost - minForceBoost) * y) + minForceBoost;
 
-        Debug.Log($"Output {y} | Scaled {result}");
         return result;
     }
 }

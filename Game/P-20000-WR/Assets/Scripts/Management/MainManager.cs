@@ -20,6 +20,9 @@ public class MainManager : MonoBehaviour
     private DetectMouseInput detectMouseInputScript;
     private Options optionsScript;
 
+    public event EventHandler OnPlayBall;
+    public event EventHandler OnQuitBall;
+
 
     private void Start()
     {
@@ -49,13 +52,15 @@ public class MainManager : MonoBehaviour
             // start up host, then client and establish a connection
             StartBatInputHost();
             detectBatClientScript.ConnectClient();
+
         }
         else  // otherwise, we handle input via M&K
         {
             UnityEngine.Debug.Log("Starting M&K scripts");
             detectMouseInputScript.ConnectClient();
         }
-        
+
+        OnPlayBall?.Invoke(this, EventArgs.Empty);
     }
 
     private void StopGame(object sender, EventArgs e)
@@ -74,6 +79,8 @@ public class MainManager : MonoBehaviour
             UnityEngine.Debug.Log("Stopping M&K scripts");
             detectMouseInputScript.DcClient();
         }
+
+        OnQuitBall?.Invoke(this, EventArgs.Empty);
 
     }
 
