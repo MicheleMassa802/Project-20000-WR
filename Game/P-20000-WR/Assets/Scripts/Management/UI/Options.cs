@@ -48,7 +48,6 @@ public class Options : MonoBehaviour
         speedValue = 0.0f;
         wildnessValue = 0.0f;
         inputType = InputTypes.MouseAndKeyboard;
-        Debug.Log(isRighty + " - " + speedValue + " - " + wildnessValue);
         PitchingSpeedSetter(speedValue);
         PitchingWildnessSetter(wildnessValue);
         InputTypeSetter((int)inputType);

@@ -66,7 +66,6 @@ public class Pitcher : MonoBehaviour
 
         // Track the ball's events and echo them to the scorekeeper
         instantiatedBall.GetComponent<BallLifeCycleManager>().OnRegisterBallResults += (obj, eventArgs) => {
-            Debug.Log("echoing");
             OnDisplayBallResults?.Invoke(obj, eventArgs);
         };
 

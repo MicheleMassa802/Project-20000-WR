@@ -62,8 +62,6 @@ public class ScoreKeeper : MonoBehaviour
             return;
         }
 
-        Debug.Log("recording");
-
         // categorize the incoming event, and register it as the correct related stat
         switch (e.Outcome)
         {

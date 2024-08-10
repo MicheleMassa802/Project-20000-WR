@@ -77,7 +77,6 @@ public class DetectBatClient : MonoBehaviour
         // in charge of moving bat based on the batData sent by the camera
         if (readData)
         {
-            Debug.Log(batData);
             List<float> parsedData = BatPositionUtil.ParseReceivedData(batData);  // returns a 3 len array
 
             // check for swing

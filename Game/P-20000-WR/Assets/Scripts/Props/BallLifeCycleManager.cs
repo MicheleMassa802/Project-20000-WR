@@ -228,7 +228,6 @@ public class BallLifeCycleManager : MonoBehaviour
 
     private void RecordOutcome(BallOutcome registeredOutcome)
     {
-        Debug.Log("invoking");
         // send off outcome of this ball for record registering and UI updates
         OnRegisterBallResults?.Invoke(this, new BallOutcomeData { Outcome = registeredOutcome });
         checkedForOutcome = true;
