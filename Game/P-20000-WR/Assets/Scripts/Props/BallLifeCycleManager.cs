@@ -64,6 +64,7 @@ public class BallLifeCycleManager : MonoBehaviour
     private List<BallEvent> ballLifeSequence = new();
     private GameObject sweetSpot;
     private Rigidbody ballRb;
+    private TrailRenderer trailRenderer;
 
     public float maxForceBoost;
     public float minForceBoost;
@@ -79,6 +80,8 @@ public class BallLifeCycleManager : MonoBehaviour
     {
         ballRb = GetComponent<Rigidbody>();
         sweetSpot = GameObject.Find(SweetSpotId);
+        trailRenderer = GetComponent<TrailRenderer>();
+        if (trailRenderer != null) { trailRenderer.enabled = false; }
 
         StartCoroutine(ManageBallLifeCycle());
     }
@@ -125,7 +128,7 @@ public class BallLifeCycleManager : MonoBehaviour
                 // power up ball, set its gravity scale back to 1, and activate trails
                 PowerUpBattedBall(collision);
                 OnHitBall?.Invoke(this, EventArgs.Empty);
-
+                if (trailRenderer != null) { trailRenderer.enabled = true; }
                 // fall through to record the contact
             }
             else if (collider.CompareTag(BallContactPoint.Player.ToString()))
