@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using Unity.VisualScripting;
 using System;
-using UnityEditor;
 
 public class Options : MonoBehaviour
 {
