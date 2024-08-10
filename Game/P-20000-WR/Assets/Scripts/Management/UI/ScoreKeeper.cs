@@ -137,6 +137,7 @@ public class ScoreKeeper : MonoBehaviour
         if (currentStrikes >= 3)
         {
             strikeouts++;
+            outs++;
             ResetCount();
         }
 

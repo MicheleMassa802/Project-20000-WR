@@ -24,7 +24,7 @@ public class Options : MonoBehaviour
     private float wildnessValue;
     private float minWildness = 0.0f;
     private float maxWildnessExtra = 100.0f;
-    
+
     private InputTypes inputType;
     public bool isRighty;
 
@@ -74,6 +74,11 @@ public class Options : MonoBehaviour
         wildnessValue = inputValue * maxWildnessExtra + minWildness;
         wildnessText.text = wildnessValue.ToString("0");  // whole number
         PlayerPrefs.SetInt("wildness", (int)wildnessValue);
+    }
+
+    public void PitchingBallSetter(bool isEzBallSelected)
+    {
+        Pitcher.easyMode = isEzBallSelected;
     }
 
     public void InputTypeSetter(int inputTypeValue)

@@ -122,9 +122,10 @@ public class BallLifeCycleManager : MonoBehaviour
             // first contact collision can be either a batted ball, HBP, or wild pitch
             if (collider.CompareTag(BallContactPoint.Bat.ToString()))
             {
-                // power up ball and set its gravity scale back to 1
+                // power up ball, set its gravity scale back to 1, and activate trails
                 PowerUpBattedBall(collision);
                 OnHitBall?.Invoke(this, EventArgs.Empty);
+
                 // fall through to record the contact
             }
             else if (collider.CompareTag(BallContactPoint.Player.ToString()))

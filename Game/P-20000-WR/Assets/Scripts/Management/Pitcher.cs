@@ -11,7 +11,7 @@ public class Pitcher : MonoBehaviour
     public GameObject ezBallPrefab;
     public Transform pitcherHand;
     public GameObject strikeZone;
-    public bool easyMode;
+    public static bool easyMode;
     public int timeOut = 12;
     public float throwForce = 1.7f;
 
