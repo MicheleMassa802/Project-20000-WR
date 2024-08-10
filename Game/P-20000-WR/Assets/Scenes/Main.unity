@@ -8843,7 +8843,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.48, z: 0.4}
-  m_LocalScale: {x: 0.8, y: 1.3, z: 0.1}
+  m_LocalScale: {x: 0.9, y: 1.3, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 561582934}
@@ -12410,6 +12410,7 @@ GameObject:
   - component: {fileID: 2078236217}
   - component: {fileID: 2078236219}
   - component: {fileID: 2078236218}
+  - component: {fileID: 2078236220}
   m_Layer: 5
   m_Name: StrikeZonePanel
   m_TagString: Untagged
@@ -12431,11 +12432,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1299587582}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -0.0000009934103, y: -40}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -0.0000009934103, y: -12.500004}
   m_SizeDelta: {x: 27, y: 41}
-  m_Pivot: {x: 0.5, y: 1}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2078236218
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12474,6 +12475,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2078236216}
   m_CullTransparentMesh: 1
+--- !u!114 &2078236220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2078236216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8d2590c208f50248b91f792da80ad1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hintPrefab: {fileID: 1198404330957512173, guid: e7d0e393d40ba83479bc3d0e5ec0de30, type: 3}
 --- !u!1 &2109847246
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,6 +14,12 @@ public class BatPositionUtil : MonoBehaviour
     public static readonly float ySZCenter = 60;   // scaled down
     public static readonly float zRange = 3.85f;
     public static readonly float yRange = 3.1f;
+
+    public static readonly float ySZHeightPx = 41;    // scaled down
+    public static readonly float xSZWidthPx = 27;   // scaled down
+    public static readonly float gameSZHeight = 1.3f;
+    public static readonly float gameSZWidth = 0.9f;
+    
     public static readonly float xRangeFramePx = 640;
     public static readonly float yRangeFramePx = 480;
     public static readonly float canvasX = Screen.width;
@@ -115,5 +121,14 @@ public class BatPositionUtil : MonoBehaviour
 
         // add these distances to the top left coord of the range and return that
         return new Vector3(inGameX, inGameY, 0);
+    }
+
+    // helper to transform inGame offsets from the center of the strikezone into
+    // ui bat range pixel offsets
+    public static Vector2 GameToPixelStrikeZoneOffsets(Vector2 gamePosition)
+    {
+        float xScaled = -gamePosition.x * xSZWidthPx / gameSZWidth;  // negated to invert offset dir
+        float yScaled = gamePosition.y * ySZHeightPx / gameSZHeight;
+        return new Vector2(xScaled, yScaled);
     }
 }

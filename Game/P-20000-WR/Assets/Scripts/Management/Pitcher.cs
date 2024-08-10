@@ -7,8 +7,15 @@ using static BallLifeCycleManager;
 
 public class Pitcher : MonoBehaviour
 {
+
+    public class BallHintPosition : EventArgs
+    {
+        public Vector2 BallPosition { get; set; }
+    }
+
     public GameObject ballPrefab;
     public GameObject ezBallPrefab;
+
     public Transform pitcherHand;
     public GameObject strikeZone;
     public static bool easyMode;
@@ -24,11 +31,13 @@ public class Pitcher : MonoBehaviour
     private float flightTime;
 
     private Vector3 dot;
+    private Vector2 pitchOffsets;
     private Vector3 pitchLocation;
     private Vector3 handPosition;
 
     private Vector3 velo;
 
+    public event EventHandler<BallHintPosition> OnThrowPitch;
     public event EventHandler<BallOutcomeData> OnDisplayBallResults;
 
     // Start is called before the first frame update
@@ -52,7 +61,8 @@ public class Pitcher : MonoBehaviour
     {
         GameObject ball = easyMode ? ezBallPrefab : ballPrefab;
         // instantiate a ball directed at the mound
-        pitchLocation = RandomLocation();
+        pitchOffsets = RandomOffsets();
+        pitchLocation = RandomLocation(pitchOffsets);
         Vector3 throwDirection = pitchLocation - handPosition;
 
         float xVelo = throwDirection.x / flightTime;
@@ -61,7 +71,9 @@ public class Pitcher : MonoBehaviour
         float zVelo = throwDirection.z / flightTime;
         velo = new Vector3(xVelo, yVelo, zVelo) * throwForce;
 
-        // spawn ball
+        // spawn ball and send position to hint renderer
+        Vector2 pitchHintLocation = new Vector2(pitchOffsets.x, pitchOffsets.y);
+        OnThrowPitch?.Invoke(this, new BallHintPosition { BallPosition = pitchHintLocation });
         GameObject instantiatedBall = Instantiate(ball, pitcherHand.position, Quaternion.identity);
 
         // Track the ball's events and echo them to the scorekeeper
@@ -72,15 +84,19 @@ public class Pitcher : MonoBehaviour
         // apply
         Rigidbody ballRb = instantiatedBall.GetComponent<Rigidbody>();
         ballRb.velocity = velo;
-
     }
 
-    private Vector3 RandomLocation()
+    private Vector2 RandomOffsets()
     {
-        float randZ = UnityEngine.Random.Range(-zVariability, zVariability);
-        float randY = UnityEngine.Random.Range(-yVariability, yVariability);
+        return new Vector2(
+                UnityEngine.Random.Range(-zVariability, zVariability),
+                UnityEngine.Random.Range(-yVariability, yVariability)
+        );
+    }
 
-        Vector3 pitchLoc = new Vector3(dot.x, dot.y + randY, dot.z + randZ);
+    private Vector3 RandomLocation(Vector2 offsets)
+    {
+        Vector3 pitchLoc = new Vector3(dot.x, dot.y + offsets.y, dot.z + offsets.x);
         return pitchLoc;
 
     }
