@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,7 +12,7 @@ public class MainManager : MonoBehaviour
     // NOTE: this makes Python a required install for running this game !!!
 
     private Process process;
-    private const string processPath = @"Assets\Scripts\Management\Input\SendInput.py";
+    private readonly string processPath = Path.Combine(Application.dataPath, @"Scripts\Management\Input\SendInput.py");
     private bool processRunning = false;
 
     private MovePlayer movePlayerScript;  // fires off locking/unlocking event
