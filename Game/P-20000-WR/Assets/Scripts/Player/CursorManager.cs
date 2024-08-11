@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CursorManager : MonoBehaviour
 {
@@ -35,6 +36,8 @@ public class CursorManager : MonoBehaviour
 
         detectBatClientScript.OnTrackBat += StartTrackingBat;
         detectBatClientScript.OnStopTrackBat += StopTrackingBat;
+
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
 
 
@@ -80,5 +83,14 @@ public class CursorManager : MonoBehaviour
 
             yield return null;
         }
+    }
+
+    void OnSceneUnloaded(Scene current)
+    {
+        movePlayerScript.OnPlayerLock -= DrawBat;
+        movePlayerScript.OnPlayerUnlock -= EraseBat;
+
+        detectBatClientScript.OnTrackBat -= StartTrackingBat;
+        detectBatClientScript.OnStopTrackBat -= StopTrackingBat;
     }
 }

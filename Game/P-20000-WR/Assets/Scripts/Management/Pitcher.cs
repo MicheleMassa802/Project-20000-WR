@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static BallLifeCycleManager;
 
 public class Pitcher : MonoBehaviour
@@ -51,6 +52,8 @@ public class Pitcher : MonoBehaviour
 
         SetupPitchingSettings(null, null);
         InvokeRepeating("Pitch", 3.0f, timeOut);
+
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
 
 
@@ -163,6 +166,11 @@ public class Pitcher : MonoBehaviour
         // + 0.3f game offset -> to make it fun yo :<)
 
         flightTime = (90.0f / speed * 0.5f) + 0.3f;
+    }
+
+    void OnSceneUnloaded(Scene current)
+    {
+        optionsScript.OnGameStart -= SetupPitchingSettings;
     }
 
 }

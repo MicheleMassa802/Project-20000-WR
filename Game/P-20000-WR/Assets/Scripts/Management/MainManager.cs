@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainManager : MonoBehaviour
 {
@@ -34,6 +35,8 @@ public class MainManager : MonoBehaviour
 
         optionsScript.OnGameStart += StartGame;
         movePlayerScript.OnPlayerUnlock += StopGame;
+
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
 
 
@@ -117,6 +120,12 @@ public class MainManager : MonoBehaviour
         {
             StopBatInputHost();
         }
+    }
+
+    void OnSceneUnloaded(Scene current)
+    {
+        optionsScript.OnGameStart -= StartGame;
+        movePlayerScript.OnPlayerUnlock -= StopGame;
     }
 
 }

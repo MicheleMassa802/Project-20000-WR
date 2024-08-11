@@ -62,6 +62,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OptionsMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""b2e007c3-4164-45cb-8bb9-2b2568bf5387"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -317,6 +326,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""CycleSecCam"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""45010426-9033-4c26-91c8-634c2db2dba8"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""OptionsMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""80891646-a6c7-4d9c-9d47-565493630428"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""OptionsMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -352,6 +383,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_BattingLock = m_Player.FindAction("Batting Lock", throwIfNotFound: true);
         m_Player_CamRotation = m_Player.FindAction("CamRotation", throwIfNotFound: true);
         m_Player_CycleSecCam = m_Player.FindAction("CycleSecCam", throwIfNotFound: true);
+        m_Player_OptionsMenu = m_Player.FindAction("OptionsMenu", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -417,6 +449,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_BattingLock;
     private readonly InputAction m_Player_CamRotation;
     private readonly InputAction m_Player_CycleSecCam;
+    private readonly InputAction m_Player_OptionsMenu;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -425,6 +458,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @BattingLock => m_Wrapper.m_Player_BattingLock;
         public InputAction @CamRotation => m_Wrapper.m_Player_CamRotation;
         public InputAction @CycleSecCam => m_Wrapper.m_Player_CycleSecCam;
+        public InputAction @OptionsMenu => m_Wrapper.m_Player_OptionsMenu;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -446,6 +480,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @CycleSecCam.started += instance.OnCycleSecCam;
             @CycleSecCam.performed += instance.OnCycleSecCam;
             @CycleSecCam.canceled += instance.OnCycleSecCam;
+            @OptionsMenu.started += instance.OnOptionsMenu;
+            @OptionsMenu.performed += instance.OnOptionsMenu;
+            @OptionsMenu.canceled += instance.OnOptionsMenu;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -462,6 +499,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @CycleSecCam.started -= instance.OnCycleSecCam;
             @CycleSecCam.performed -= instance.OnCycleSecCam;
             @CycleSecCam.canceled -= instance.OnCycleSecCam;
+            @OptionsMenu.started -= instance.OnOptionsMenu;
+            @OptionsMenu.performed -= instance.OnOptionsMenu;
+            @OptionsMenu.canceled -= instance.OnOptionsMenu;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -503,5 +543,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnBattingLock(InputAction.CallbackContext context);
         void OnCamRotation(InputAction.CallbackContext context);
         void OnCycleSecCam(InputAction.CallbackContext context);
+        void OnOptionsMenu(InputAction.CallbackContext context);
     }
 }

@@ -58,6 +58,8 @@ public class Options : MonoBehaviour
 
         // deactivate the options menu
         optionsMenu.SetActive(false);
+
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
 
     public void PitchingSpeedSetter(float inputValue)
@@ -112,5 +114,11 @@ public class Options : MonoBehaviour
         };
 
         return result;
+    }
+
+    void OnSceneUnloaded(Scene current)
+    {
+        movePlayerScript.OnPlayerLock -= StepOntoPlate;
+        movePlayerScript.OnPlayerUnlock -= StepOffPlate;
     }
 }

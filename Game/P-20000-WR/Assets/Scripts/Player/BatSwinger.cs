@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BatSwinger : MonoBehaviour
 {
@@ -41,6 +42,8 @@ public class BatSwinger : MonoBehaviour
         // event handling
         optionsScript.OnGameStart += AtBatStart;
         movePlayerScript.OnPlayerUnlock += AtBatEnd;
+
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
 
 
@@ -99,5 +102,11 @@ public class BatSwinger : MonoBehaviour
         isSwingAnimationRunning = true;
         yield return new WaitForSeconds(swingAnimationTime);
         isSwingAnimationRunning = false;
+    }
+
+    void OnSceneUnloaded(Scene current)
+    {
+        optionsScript.OnGameStart -= AtBatStart;
+        movePlayerScript.OnPlayerUnlock -= AtBatEnd;
     }
 }

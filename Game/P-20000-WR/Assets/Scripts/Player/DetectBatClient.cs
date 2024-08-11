@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using static BatSwinger;
 
 public class DetectBatClient : MonoBehaviour
 {
@@ -51,9 +54,14 @@ public class DetectBatClient : MonoBehaviour
         defaultPosition = BatPositionUtil.WorldSZCenter - sweetSpotOffset;
         // watch out for side switching when computing offsets
         batSwingerScript = GameObject.Find("Bat").GetComponent<BatSwinger>();
-        batSwingerScript.OnRegisterSideSwitch += (obj, eventArgs) => { isRighty = eventArgs.IsRighty; };
+        batSwingerScript.OnRegisterSideSwitch += RegisterSideSwitch;
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
 
+    public void RegisterSideSwitch(object sender, RegisterSideSwitchEventArgs e)
+    {
+        isRighty = e.IsRighty;
+    }
 
     IEnumerator ReceiveData()
     {
@@ -154,6 +162,11 @@ public class DetectBatClient : MonoBehaviour
         StartCoroutine(ReceiveData());
     }
 
+    void OnSceneUnloaded(Scene current)
+    {
+        batSwingerScript.OnRegisterSideSwitch -= RegisterSideSwitch;
+        OnApplicationQuit();
+    }
 
     void OnApplicationQuit()
     {

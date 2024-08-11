@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class MovePlayer : MonoBehaviour
 {
@@ -28,6 +29,8 @@ public class MovePlayer : MonoBehaviour
         playerInputActions = new PlayerInputActions();
         playerInputActions.Player.Enable();
         playerInputActions.Player.BattingLock.performed += ToggleBattingLock;
+
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
 
 
@@ -124,6 +127,11 @@ public class MovePlayer : MonoBehaviour
         }
     }
     #endregion
+
+    void OnSceneUnloaded(Scene current)
+    {
+        playerInputActions.Player.BattingLock.performed -= ToggleBattingLock;
+    }
 
 
 }

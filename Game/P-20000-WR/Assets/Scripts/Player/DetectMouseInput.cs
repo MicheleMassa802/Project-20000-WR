@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using static BatSwinger;
 
 public class DetectMouseInput : MonoBehaviour
 {
@@ -34,7 +36,14 @@ public class DetectMouseInput : MonoBehaviour
         defaultPosition = BatPositionUtil.WorldSZCenter - sweetSpotOffset;
         // watch out for side switching when computing offsets
         batSwingerScript = GameObject.Find("Bat").GetComponent<BatSwinger>();
-        batSwingerScript.OnRegisterSideSwitch += (obj, eventArgs) => { isRighty = eventArgs.IsRighty; };
+        batSwingerScript.OnRegisterSideSwitch += RegisterSideSwitch;
+
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
+    }
+
+    public void RegisterSideSwitch(object sender, RegisterSideSwitchEventArgs e)
+    {
+        isRighty = e.IsRighty;
     }
 
     private void Update()
@@ -79,4 +88,9 @@ public class DetectMouseInput : MonoBehaviour
 
     public void ConnectClient() { readData = true; }
     public void DcClient() { readData = false; }
+
+    void OnSceneUnloaded(Scene current)
+    {
+        batSwingerScript.OnRegisterSideSwitch -= RegisterSideSwitch;
+    }
 }

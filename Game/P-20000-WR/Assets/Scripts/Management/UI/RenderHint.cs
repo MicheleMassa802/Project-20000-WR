@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RenderHint : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class RenderHint : MonoBehaviour
     {
         pitcherScript = GameObject.Find(pitcherName)?.GetComponent<Pitcher>();
         pitcherScript.OnThrowPitch += DisplayHint;
+
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
 
     private void DisplayHint(object sender, Pitcher.BallHintPosition hintPosition)
@@ -39,5 +42,10 @@ public class RenderHint : MonoBehaviour
 
         // destroy after timeout before the next pitch
         Destroy(hintJustRendered, hintTimeout);
+    }
+
+    void OnSceneUnloaded(Scene current)
+    {
+        pitcherScript.OnThrowPitch -= DisplayHint;
     }
 }

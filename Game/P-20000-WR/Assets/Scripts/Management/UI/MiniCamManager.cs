@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class MiniCamManager : MonoBehaviour
 {
@@ -29,6 +30,8 @@ public class MiniCamManager : MonoBehaviour
         playerInputActions = new PlayerInputActions();
         playerInputActions.Player.Enable();
         playerInputActions.Player.CycleSecCam.performed += CycleCameras;
+
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
 
     private void StartUpSecondaryCams(object sender, EventArgs e)
@@ -68,5 +71,12 @@ public class MiniCamManager : MonoBehaviour
         isSecondaryCamOn = false;
         miniCamFrame.SetActive(false);
         nextCamToActivate = 0;
+    }
+
+    void OnSceneUnloaded(Scene current)
+    {
+        optionsScript.OnGameStart -= StartUpSecondaryCams;
+        movePlayerScript.OnPlayerUnlock -= DeactivateCameras;
+        playerInputActions.Player.CycleSecCam.performed -= CycleCameras;
     }
 }

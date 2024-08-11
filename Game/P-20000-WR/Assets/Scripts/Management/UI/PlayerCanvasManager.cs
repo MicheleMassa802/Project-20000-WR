@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerCanvasManager : MonoBehaviour
 {
@@ -19,12 +20,18 @@ public class PlayerCanvasManager : MonoBehaviour
         // event handling
         optionsScript.OnGameStart += ShowRange;
         movePlayerScript.OnPlayerUnlock += HideRange;
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
 
     // the function handling
     private void ShowRange(object sender, EventArgs e) { battingRange.SetActive(true); }
     private void HideRange(object sender, EventArgs e) { battingRange.SetActive(false); }
 
+    void OnSceneUnloaded(Scene current)
+    {
+        optionsScript.OnGameStart -= ShowRange;
+        movePlayerScript.OnPlayerUnlock -= HideRange;
+    }
 }
 
 

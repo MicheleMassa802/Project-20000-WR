@@ -1,5 +1,8 @@
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public class ScoreKeeper : MonoBehaviour
 {
@@ -38,11 +41,8 @@ public class ScoreKeeper : MonoBehaviour
     {
         // determine when to record stats
         mainManagerScript = GameObject.Find("MainManager").GetComponent<MainManager>();
-        mainManagerScript.OnPlayBall += (obj, e) => { trackStats = true; };
-        mainManagerScript.OnQuitBall += (obj, e) => { 
-            trackStats = false;
-            ResetAllStats();
-        };
+        mainManagerScript.OnPlayBall += PlayBall;
+        mainManagerScript.OnQuitBall += QuitBall;
 
         // listen for OnDisplayBallResults events
         pitcherScript = GameObject.Find("PitchingManager").GetComponent<Pitcher>();
@@ -50,6 +50,19 @@ public class ScoreKeeper : MonoBehaviour
 
         // setup at start
         SetValues();
+
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
+    }
+
+    private void PlayBall(object sender, EventArgs e)
+    {
+        trackStats = true;
+    }
+
+    private void QuitBall(object sender, EventArgs e)
+    {
+        trackStats = false;
+        ResetAllStats();
     }
 
     private void RecordOnScoreboard(object sender, BallLifeCycleManager.BallOutcomeData e)
@@ -159,5 +172,12 @@ public class ScoreKeeper : MonoBehaviour
         homers = 0;
 
         SetValues();
+    }
+
+    void OnSceneUnloaded(Scene current)
+    {
+        mainManagerScript.OnPlayBall -= PlayBall;
+        mainManagerScript.OnQuitBall -= QuitBall;
+        pitcherScript.OnDisplayBallResults -= RecordOnScoreboard;
     }
 }
