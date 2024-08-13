@@ -41,10 +41,10 @@ This combined with the in-game gravity modifier system for the balls (where the 
 
 **Note**: for using BatTM, you will need one of the versions below that support the BatTM usage along with a BatTM-resembling object (with two distinguishable red blobs), and a camera. I personally used my phone and IvCam (setup video not made by me can be found [here](https://youtu.be/3-_pIos5n8s?si=Rn0dvIi_Lp_yCKb7)) throughout the development of this project, so that might work even better than a fancier setup!
 
-### Full Version: [TODO]
+### Full Version: 
 A full MVP version of the game can be found here, this contains the executable file which you can make via Unity builds, which is very comfortable to play, works well overall apart from a couple of Unity's peculiarities (if found, just quit the game and restart!), and supports both M&K as well as BatTM inputs for the game.
 
-Download the zip with the executable for the full version here!
+Download the zip with the executable for the [full version here!](https://drive.google.com/file/d/1i1_l2raRQTTNSkAD3JfpcWnaTGZbrDbR/view?usp=sharing)
 
 ### Mouse & Keyboard (no BatTM support):
 A solely M&K MVP version of the game can be found here, this contains the executable file which you can make via Unity builds, which is very comfortable to play and works really well, but it only supports mouse and keyboard inputs (no bat object or visual computing done in this version) as Unity, as the calling of Python scripts is a hard thing to set up correctly with Unity builds.
