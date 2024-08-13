@@ -50,7 +50,7 @@ public class BatPositionUtil : MonoBehaviour
     public static List<float> ParseReceivedData(string strDic)
     {
         // get the values of each data piece
-        // w/ a strDic of the form: {"scaled_dist": [x,x], "swing": y}
+        // w/ a strDic of the form: {"pixel_position": [x,x], "swing": y}
         List<float> result;
 
         int validCount = strDic.Count(c => c == '}');
@@ -72,23 +72,40 @@ public class BatPositionUtil : MonoBehaviour
         string[] strList = strDic.Split(',');
         // "scaled_dist": x---x---"swing": y
 
-        // No need for 'None' check => handled in backend by sending {(0,0), 0}
-
+        
         result = new();
+        float parsedNum = 0.0f; // for preventative null checks
+        int i = 0;
+
         foreach (string s in strList)
         {
             // put s into result
             string moddedS;
             if (s.Contains(':'))
             {
-                moddedS = s.Split(':')[1].Trim();
+                moddedS = s.Split(':')[1].Trim();  // guaranteed to have something after ':'
             }
             else
             {
                 moddedS = s.Trim();
             }
 
-            result.Add(float.Parse(moddedS));
+            if (float.TryParse(moddedS, out parsedNum))
+            {
+                result.Add(parsedNum); 
+            } 
+            else
+            {
+                Debug.Log($"Not able to parse {moddedS} as a float, defaulting to 0!");
+                result.Add(0);
+                if (i == 0)
+                {
+                    // the extra position default (outside of the first index there's no coords communicated)
+                    result.Add(0);  
+                }
+            }
+
+            i++;
         }
         return result;
     }

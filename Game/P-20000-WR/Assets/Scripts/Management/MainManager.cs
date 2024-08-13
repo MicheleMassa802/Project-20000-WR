@@ -12,7 +12,14 @@ public class MainManager : MonoBehaviour
     // NOTE: this makes Python a required install for running this game !!!
 
     private Process process;
+# if UNITY_EDITOR
     private readonly string processPath = Path.Combine(Application.dataPath, @"Scripts\Management\Input\SendInput.py");
+    private readonly string pythonPath = Path.Combine(Application.dataPath, @"Python\python.exe");
+#else
+    private readonly string processPath = Path.Combine(Application.streamingAssetsPath, @"Scripts\Management\Input\SendInput.py");
+    private readonly string pythonPath = Path.Combine(Application.streamingAssetsPath, @"Python\python.exe");
+#endif
+
     private bool processRunning = false;
 
     private MovePlayer movePlayerScript;  // fires off locking/unlocking event
@@ -94,7 +101,7 @@ public class MainManager : MonoBehaviour
 
         process = new Process();
         // open a python program under the given path 
-        process.StartInfo.FileName = "python";
+        process.StartInfo.FileName = pythonPath;
         process.StartInfo.Arguments = processPath + " --isRighty " + isRighty;
 
         process.StartInfo.UseShellExecute = false;
