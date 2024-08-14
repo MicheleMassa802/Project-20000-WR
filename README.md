@@ -44,7 +44,7 @@ This combined with the in-game gravity modifier system for the balls (where the 
 ### Full Version: 
 A full MVP version of the game can be found here, this contains the executable file which you can make via Unity builds, which is very comfortable to play, works well overall apart from a couple of Unity's peculiarities (if found, just quit the game and restart!), and supports both M&K as well as BatTM inputs for the game.
 
-Download the zip with the executable for the [full version here!](https://drive.google.com/file/d/1i1_l2raRQTTNSkAD3JfpcWnaTGZbrDbR/view?usp=sharing)
+Download the zip with the executable for the [Full version here!](https://drive.google.com/file/d/184KPslJSrhbWwMs26vzR9KBaft7xnK5c/view?usp=sharing)
 
 ### Mouse & Keyboard (no BatTM support):
 A solely M&K MVP version of the game can be found here, this contains the executable file which you can make via Unity builds, which is very comfortable to play and works really well, but it only supports mouse and keyboard inputs (no bat object or visual computing done in this version) as Unity, as the calling of Python scripts is a hard thing to set up correctly with Unity builds.
