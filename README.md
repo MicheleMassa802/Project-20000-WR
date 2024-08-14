@@ -74,8 +74,14 @@ Note: I use Unity 2022.3.10f1 for the development of this project, so that would
 
 # Controls:
 
-The main controls for the game revolve around using your mouse and keyboard and the BatTM (or a combination of these) to move around, pick where to look at while batting, and perform the batting. Additionally, there is controller support for movement-related actions, but you won't be able to bat this way (I'm sorry I have to limit the project in some way to save time!).
+The main controls for the game revolve around using your mouse and keyboard and the BatTM (or a combination of these) to move around, pick where to look at while batting, and perform the batting. Additionally, there is controller support for movement-related actions, but you won't be able to bat this way for the moment being (I had to limit scope somewhere, but I might fully i implement controller support at some point).
 
+You can follow the following diagrams for further reference: 
+![P20000WR-Controllers](https://github.com/user-attachments/assets/7fefe4df-7a02-4239-9da1-764d12cb89b4)
+![P20000WR-Controllers (1)](https://github.com/user-attachments/assets/a55ff048-7ed1-4ad3-bc82-ba39ba9a2528)
+![P20000WR-Controllers (2)](https://github.com/user-attachments/assets/388ed4e4-d455-4f9f-b66b-9f263e4a46ae)
+![P20000WR-Controllers (3)](https://github.com/user-attachments/assets/3430ced1-4624-4410-90da-6a9453b7d7de)
+![P20000WR-Controllers (4)](https://github.com/user-attachments/assets/b42b5d7c-38e0-4da3-b90e-4aa56795976e)
 
 # Exitlude
 
