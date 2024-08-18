@@ -37,6 +37,8 @@ This is my own function for powering up the ball after it is hit by the bat, if 
 
 This combined with the in-game gravity modifier system for the balls (where the gravity of balls changes from the moment they are thrown by the pitcher/hit by the bat/touch the ground), makes it so that the weight and trajectory of the ball feel both more rewarding and realistic, given that our 2D data from the bat's position can't really communicate anything special about our batting object's speed.
 
+Another math-heavy process is the pitching, which based on a set of parameters the user specifies when they step into the box, is in charge of calculating the final position of the ball on the strike zone (or slightly outside). This system has to come up with the set of forces and directions to be applied to the ball at different stages as it exits the pitcher's hands in order to get to its target location, while obeying the speed parameter as input by the user.
+
 # Playing the Game:
 
 **Note**: for using BatTM, you will need one of the versions below that support the BatTM usage along with a BatTM-resembling object (with two distinguishable red blobs), and a camera. I personally used my phone and IvCam (setup video not made by me can be found [here](https://youtu.be/3-_pIos5n8s?si=Rn0dvIi_Lp_yCKb7)) throughout the development of this project, so that might work even better than a fancier setup!
