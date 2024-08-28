@@ -7,7 +7,7 @@ The inspiration for this project is Wii Sports baseball, and I can only wish I c
 # Demo of the Game:
 
 If you just want to take a quick look over what the game is like, you can watch a demo of the core functionality here:
-Demo Video! [TODO]
+[Demo Video!](https://youtu.be/h7v9lAmsTDA)
 
 # Specifications (nerd stuff)
 
